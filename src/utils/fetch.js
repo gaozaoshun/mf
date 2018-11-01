@@ -4,7 +4,7 @@ const fly = new Fly()
 
 const baseUrl = process.env.NODE_ENV === 'development'
     // 开发环境
-    ? 'http://127.0.0.1:9999/api/v1'
+    ? 'http://127.0.0.1:9999/mp/api/v1/'
     // 线上环境
     : 'http://www.hanbook.top/api/v1'
 
@@ -15,13 +15,15 @@ fly.interceptors.request.use(request => {
         mask: true, //显示透明蒙层，防止触摸穿透,
     })
     // 请求头
-    request.header = {
+    request.headers = {
         'X-Tag': 'flyio',
-        'content-type': 'application/json'
+        'content-type': 'application/json',
+        'x-access-token': wx.getStorageSync('token') || ''
     }
+    console.log(request.headers)
     // 公共请求参数
     let authParams = {
-        'timestamp': new Date().getTime()
+        'timestamp': new Date().getTime(),
     }
     request.body && Object.keys(request.body).forEach((val) => {
         if (request.body[val] === '') {

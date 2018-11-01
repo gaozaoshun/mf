@@ -1,122 +1,75 @@
 <template>
-  <div class="container" @click="clickHandle('test click', $event)">
-
-    <div class="userinfo" @click="bindViewTap">
-      <img class="userinfo-avatar" v-if="userInfo.avatarUrl" :src="userInfo.avatarUrl" background-size="cover" />
-      <div class="userinfo-nickname">
-        <card :text="userInfo.nickName"></card>
-      </div>
-      <i-card full title="卡片标题" extra="额外内容" thumb="https://i.loli.net/2017/08/21/599a521472424.jpg">
-				<view slot="content">内容不错</view>
-				<view slot="footer">尾部内容</view>
-			</i-card>
+  <div class="container">
+    <Button type="primary" open-type='getUserInfo' @getuserinfo="getUserInfo">登录</Button>
+    <div v-if="userInfo.nickName">
+      <h5>{{userInfo.nickName}}</h5>
+      <img :src="userInfo.avatarUrl" style="width:50px;height:50px"/>
     </div>
-
-    <div class="usermotto">
-      <div class="user-motto">
-        <card :text="motto"></card>
-      </div>
-    </div>
-
-
-    <form class="form-container">
-      <input type="text" class="form-control" v-model="motto" placeholder="v-model" />
-      <input type="text" class="form-control" v-model.lazy="motto" placeholder="v-model.lazy" />
-    </form>
-    <a href="/pages/counter/main" class="counter">去往Vuex示例页面</a>
   </div>
 </template>
 
 <script>
-import card from "@/components/card";
+import card from "@/components/card"
+import { login } from '@/api/login'
 
 export default {
   data() {
     return {
-      motto: "Hello World",
-      userInfo: {}
-    };
+    }
   },
-
   components: {
     card
   },
-
+  computed: {
+    userInfo() {
+      return this.$store.state.userInfo
+    }
+  },
   methods: {
-    bindViewTap() {
-      const url = "../logs/main";
-      wx.navigateTo({ url });
-    },
-    getUserInfo() {
-      // 调用登录接口
+    getUserInfo(e) {
+      if (!e.target.rawData) {
+        console.log("拒绝授权")
+        return
+      }
+      console.log("同意授权")
+      // 获取code
       wx.login({
-        success: () => {
+        success: res => {
+          // 此时微信端已生成session_key
+          console.log('获临时凭证code', res.code)
+          let code = res.code
           wx.getUserInfo({
+            withCredentials: true,
             success: res => {
-              this.userInfo = res.userInfo;
+              // 登录请求参数
+              let body = {
+                rawData: res.rawData || '',
+                signature: res.signature || '',
+                encryptedData: res.encryptedData || '',
+                iv: res.iv || '',
+                code: code || ''
+              }
+              login(body).then(res => {
+                if (res.code === 100) {
+                  // 保存userInfo
+                  this.$store.dispatch('setUserInfo', res.data)
+                  // 保存Token
+                  wx.setStorageSync('token', res.data.token || '')
+                } else {
+                  wx.showToast({ title: '登录失败', icon: 'none' })
+                }
+              })
             }
-          });
+          })
         }
-      });
-    },
-    clickHandle(msg, ev) {
-      console.log("clickHandle:", msg, ev);
+      })
+
     }
   },
 
-  created() {
-    // 调用应用实例的方法获取全局数据
-    this.getUserInfo();
-    this.$http
-      .request({
-        method: "post",
-        url: "/login",
-        body: {
-          userName:'gzs',
-          password:'123456'
-        }
-      })
-      .then(res => {
-        console.log(res);
-      });
-  }
+  created() { }
 };
 </script>
 
 <style scoped>
-.userinfo {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-
-.userinfo-avatar {
-  width: 128rpx;
-  height: 128rpx;
-  margin: 20rpx;
-  border-radius: 50%;
-}
-
-.userinfo-nickname {
-  color: #aaa;
-}
-
-.usermotto {
-  margin-top: 150px;
-}
-
-.form-control {
-  display: block;
-  padding: 0 12px;
-  margin-bottom: 5px;
-  border: 1px solid #ccc;
-}
-
-.counter {
-  display: inline-block;
-  margin: 10px auto;
-  padding: 5px 10px;
-  color: blue;
-  border: 1px solid blue;
-}
 </style>
