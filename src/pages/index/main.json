@@ -1,4 +1,5 @@
 {
+    "navigationBarTitleText": "参与活动",
     "usingComponents": {
         "i-card": "../../../static/iview/card/index"
     }
