@@ -1,6 +1,9 @@
 import Fly from 'flyio/dist/npm/wx'
+import { $Message} from '../../static/iview/base/index'
+import { toAbsPath } from '@/utils/route'
 
 const fly = new Fly()
+
 
 const baseUrl = process.env.NODE_ENV === 'development'
     // 开发环境
@@ -41,15 +44,23 @@ fly.interceptors.request.use(request => {
 fly.interceptors.response.use(
     (response) => {
         wx.hideLoading()
+        let result = response.data
+        // 未登录或者没有权限跳转到登录页
+        console.log(result)
+        if(result.code === 102){
+            wx.navigate({ url: toAbsPath('pages/login/main')})
+        }
         return response.data // 请求成功之后将返回值返回
     },
     (err) => {
         // 请求出错，根据返回状态码判断出错原因
-        console.log(err)
         wx.hideLoading()
         if (err) {
-            return '请求失败'
-        };
+            $Message({
+                type: 'error',
+                content: '请检查您的网络！'
+            })
+        }
     }
 )
 

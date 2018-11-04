@@ -1,0 +1,6 @@
+{
+  "navigationBarTitleText": "微信登录",
+  "usingComponents": {
+    "i-message": "../../../static/iview/message/index"
+  }
+}

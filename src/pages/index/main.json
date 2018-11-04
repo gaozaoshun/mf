@@ -1,6 +1,8 @@
 {
     "navigationBarTitleText": "参与活动",
     "usingComponents": {
-        "i-card": "../../../static/iview/card/index"
+        "i-message": "../../../static/iview/message/index" ,
+        "i-notice-bar": "../../../static/iview/notice-bar/index",
+        "i-icon": "../../../static/iview/icon/index"
     }
 }

@@ -1,6 +1,8 @@
 
 export const state = {
-    userInfo: {}
+    userInfo: {},
+    address: {},
+    isLogin: false
 }
 
 export default state
