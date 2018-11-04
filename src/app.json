@@ -4,7 +4,9 @@
     "pages/me/main",
     "pages/publish/main",
     "pages/lading/main",
-    "pages/login/main"
+    "pages/login/main",
+    "pages/evaluate/main",
+    "pages/mymsg/main"
   ],
   "window": {
     "backgroundTextStyle": "light",
