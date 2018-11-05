@@ -215,7 +215,12 @@ export default {
           // 经纬度转 具体地址
           api.getLocationInfo({ latitude, longitude }).then(res => {
             if (res.infocode === '10000') {
-              this.$store.dispatch('setAddress', res.regeocode)
+              let addressComponent = res.regeocode.addressComponent
+              let address = {
+                addStr: addressComponent.city && addressComponent.city.length ? addressComponent.city : addressComponent.province,
+                citycode: addressComponent.citycode
+              }
+              this.$store.dispatch('setAddress', address)
             } else {
               wx.showToast({ title: '经纬度转换地名异常', icon: 'none' })
             }

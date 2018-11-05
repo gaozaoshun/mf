@@ -1,6 +1,8 @@
 <template>
     <div class="wrapper">
-        <div class="item bg" @click='chooseCity'><i class="iconfont mf-zuobiao"></i><span class="vertial zb">{{city}}</span><i class="iconfont mf-down"></i></div>
+        <picker mode="region" @change="chooseCity">
+            <div class="item bg"><i class="iconfont mf-zuobiao"></i><span class="vertial zb">{{city}}</span><i class="iconfont mf-down"></i></div>
+        </picker>
         <div class="item"><span class="vertial">最快开启</span></div>
         <div class="item"><span class="vertial">离我最近</span></div>
         <div class="item"><span class="vertial">参与人数</span></div>
@@ -24,8 +26,14 @@ export default {
 
     },
     methods: {
-        chooseCity() {
-
+        // 选择城市
+        chooseCity(e) {
+            console.log(e.target)
+            let address = {
+                addStr:e.target.value[1],
+                citycode:e.target.code[1]
+            }
+            this.$store.dispatch('setAddress',address)
         }
     }
 }

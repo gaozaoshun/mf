@@ -1,0 +1,8 @@
+{
+  "navigationBarTitleText": "发起活动",
+  "usingComponents": {
+    "i-message": "../../../static/iview/message/index",
+    "i-icon": "../../../static/iview/icon/index",
+    "i-action-sheet": "../../../static/iview/action-sheet/index"
+  }
+}
