@@ -266,6 +266,9 @@ export default {
 </script>
 
 <style scoped>
+.wrapper{
+  width: 750rpx;
+}
 .swiper {
   width: 750rpx;
   height: 350rpx;

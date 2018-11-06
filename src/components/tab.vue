@@ -45,7 +45,7 @@ export default {
   justify-content: space-between;
   width: 710rpx;
   height: 50rpx;
-  padding: 10rpx 40rpx 10rpx 20rpx;
+  padding: 10rpx 20rpx;
   border-bottom: 1rpx solid rgba(0, 0, 0, 0.1);
   line-height: 50rpx;
   font-size: 25rpx;

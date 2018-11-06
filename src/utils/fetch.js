@@ -7,9 +7,9 @@ const fly = new Fly()
 
 const baseUrl = process.env.NODE_ENV === 'development'
     // 开发环境
-    ? 'http://127.0.0.1:9999/mp/api/v1/'
+    ? 'http://127.0.0.1:9999/glod/mp/api/v1/'
     // 线上环境
-    : 'http://www.hanbook.top/api/v1'
+    : 'https://www.hambook.top/glod/mp/api/v1'
 
 // 添加请求拦截器
 fly.interceptors.request.use(request => {
