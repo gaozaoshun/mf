@@ -6,7 +6,8 @@
     "pages/lading/main",
     "pages/login/main",
     "pages/evaluate/main",
-    "pages/mymsg/main"
+    "pages/mymsg/main",
+    "pages/position/main"
   ],
   "window": {
     "backgroundTextStyle": "light",

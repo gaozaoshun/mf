@@ -6,7 +6,7 @@
       <i-icon class='type-icon' :type='upIcon' size='20' color='#ff9900'></i-icon>
     </div>
     <i-action-sheet :visible="openAction" :actions="actions" show-cancel @cancel="cancelType" @click="chooseType">
-        <div slot="header" style="padding: 16px">选择活动类型</div>
+      <div slot="header" style="padding: 16px">选择活动类型</div>
     </i-action-sheet>
     <!-- 必填 -->
     <div class="required">
@@ -17,14 +17,22 @@
       <i-cell-group>
         <i-cell title="主题">
           <i-icon type='integral' slot='icon' size='20'></i-icon>
-          <i-input slot="footer" right='true' :model='activity.title' i-class='cell-input' placeholder="一句话介绍聚会"/>
+          <input slot='footer' type="text" :model='activity.title' placeholder="一句话介绍聚会" class="cell-input">
         </i-cell>
-        <picker mode="time" :value="activity.startTime" start="09:01" end="21:01" bindchange="bindTimeChange">
-          <i-cell title="时间" is-link :value='activity.startTime'>
-            <i-icon type='clock' slot='icon' size='20'></i-icon>
-          </i-cell>
+        <i-cell title="时间">
+          <i-icon type='clock' slot='icon' size='20'></i-icon>
+          <div slot='footer'>
+            <picker mode="date" start="2018-11-07" end="2099-11-07" class='inline-block' @change='changeStartDate'>
+              <span>{{activity.startTime_date?activity.startTime_date:'选择日期'}}</span>
+            </picker>
+            <span> | </span>
+            <picker mode="time" start="00:00" end="23:59" class='inline-block' @change='changeStartTime'>
+              <span>{{activity.startTime_time?activity.startTime_time:'选择时间'}}</span>
+            </picker>
+          </div>
+        </i-cell>
         </picker>
-        <i-cell title="地点" is-link :value='activity.address'>
+        <i-cell title="地点" is-link :value='activity.address' url="/pages/position/main">
           <i-icon type='coordinates' slot='icon' size='20'></i-icon>
         </i-cell>
         <i-cell title="人均" is-link :value='activity.pay'>
@@ -55,13 +63,13 @@
         <i-cell title="信誉值" is-link :value='activity.score'>
           <i-icon type='financial_fill' slot='icon' size='20'></i-icon>
         </i-cell>
-        <i-cell title="约定" >
+        <i-cell title="约定">
           <i-icon type='group' slot='icon' size='20'></i-icon>
           <div slot="footer">
-              <i-tag v-for="(item,index) in tags" :key='index'>{{item}}</i-tag>
+            <i-tag v-for="(item,index) in tags" :key='index'>{{item}}</i-tag>
           </div>
         </i-cell>
-    </i-cell-group>
+      </i-cell-group>
     </div>
   </div>
 </template>
@@ -74,6 +82,8 @@ export default {
         typeName: '选择活动类型',
         title: '',
         startTime: '请选择开始时间',
+        startTime_date: '',
+        startTime_time: '',
         endTime: '请选择截止时间',
         lastTime: '不限',
         address: '请选择地址',
@@ -81,7 +91,7 @@ export default {
         totalNum: 0,
         age: '不限',
         score: '不限',
-        tags:'1,2,3'
+        tags: '1,2,3'
       },
       upIcon: 'unfold',
       openAction: false,
@@ -113,13 +123,13 @@ export default {
       ],
     }
   },
-  computed:{
-    tags(){
+  computed: {
+    tags() {
       return this.activity.tags.split(',')
     }
   },
   methods: {
-    changeTitle(title){
+    changeTitle(title) {
       console.log(title)
     },
     // 点击弹出选择活动类型Action
@@ -144,6 +154,12 @@ export default {
     // 取消选择活动类型
     cancelType() {
       this.toggleAction()
+    },
+    changeStartDate(e) {
+      this.activity.startTime_date = e.target.value
+    },
+    changeStartTime(e) {
+      this.activity.startTime_time = e.target.value
     }
   }
 }
@@ -189,7 +205,10 @@ export default {
   letter-spacing: 3rpx;
   vertical-align: middle;
 }
-.cell-input{
+.cell-input {
   width: 500rpx;
+}
+.inline-block {
+  display: inline-block;
 }
 </style>
