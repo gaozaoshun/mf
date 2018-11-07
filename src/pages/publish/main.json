@@ -7,6 +7,7 @@
     "i-cell-group": "../../../static/iview/cell-group/index",
     "i-cell": "../../../static/iview/cell/index",
     "i-tag": "../../../static/iview/tag/index",
-    "i-input": "../../../static/iview/input/index"
+    "i-input": "../../../static/iview/input/index",
+    "i-toast": "../../../static/iview/toast/index"
   }
 }

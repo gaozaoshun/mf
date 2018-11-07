@@ -6,7 +6,7 @@
 </template>
 
 <script>
-import QQMap from '~/libs/qqmap-wx-jssdk'
+// import QQMap from '~/libs/qqmap-wx-jssdk'
 export default {
   data() {
     return {
@@ -18,26 +18,33 @@ export default {
   },
   created() {
     // 实例化QQMap
-    this.initMap()
+    // this.initMap()
     
   },
   mounted(){
     // 移动选点
     this.moveToLocation()
   },
+  destoryed(){
+  },
   methods: {
-    initMap() {
-      this.map = new QQMap({
-        key: 'AHKBZ-SVHHS-WBKOL-6TCQ4-APJCF-3RBKB'
-      })
-    },
+    // initMap() {
+    //   this.map = new QQMap({
+    //     key: 'AHKBZ-SVHHS-WBKOL-6TCQ4-APJCF-3RBKB'
+    //   })
+    // },
     moveToLocation() {
       var that = this
       wx.chooseLocation({
         success: res => {
-          console.log(res.name)
           //选择地点之后返回到原来页面
-         
+          wx.navigateBack({
+            delta: 1,
+            success:()=>{
+              // 把地址放到vuex
+              this.$store.dispatch('setActivityAddress',res.name)
+            }
+          })
         },
         fail: err => {
           console.log(err)
