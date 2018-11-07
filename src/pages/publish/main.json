@@ -8,6 +8,8 @@
     "i-cell": "../../../static/iview/cell/index",
     "i-tag": "../../../static/iview/tag/index",
     "i-input": "../../../static/iview/input/index",
-    "i-toast": "../../../static/iview/toast/index"
+    "i-toast": "../../../static/iview/toast/index",
+    "i-modal": "../../../static/iview/modal/index",
+    "i-button": "../../../static/iview/button/index"
   }
 }

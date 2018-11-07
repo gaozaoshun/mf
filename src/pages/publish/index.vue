@@ -5,7 +5,7 @@
       <span class="type-name">{{activity.typeName?activity.typeName:'选择活动类型'}} </span>
       <i-icon class='type-icon' :type='upIcon' size='20' color='#ff9900'></i-icon>
     </div>
-    <i-action-sheet :visible="openAction" :actions="actions" show-cancel @cancel="cancelType" @click="chooseType">
+    <i-action-sheet :visible="openAction" :actions="typeGroup" show-cancel @cancel="cancelType" @click="chooseType">
       <div slot="header" style="padding: 16px">选择活动类型</div>
     </i-action-sheet>
     <!-- 必填 -->
@@ -17,7 +17,7 @@
       <i-cell-group>
         <i-cell title="主题">
           <i-icon type='integral' slot='icon' size='20'></i-icon>
-          <input slot='footer' type="text" :model='activity.title' placeholder="一句话介绍聚会" class="cell-input">
+          <input slot='footer' type="text" :value='activity.title' placeholder="一句话介绍聚会" class="cell-input" maxlength='15' @blur='blurTitle'>
         </i-cell>
         <i-cell title="时间">
           <i-icon type='clock' slot='icon' size='20'></i-icon>
@@ -39,30 +39,23 @@
         </i-cell>
         <i-cell title="人均">
           <i-icon type='redpacket' slot='icon' size='20'></i-icon>
-            <div slot='footer'>
-                <picker
-                  @change="changePay"
-                  :range="payGroup"
-                  range-key='value'>
-                    <span>{{activity.payStr?activity.payStr:'免费活动'}}</span>
-               </picker>
-            </div>
+          <div slot='footer'>
+            <picker @change="changePay" :range="payGroup" range-key='name'>
+              <span>{{activity.payStr?activity.payStr:'免费活动'}}</span>
+            </picker>
+          </div>
         </i-cell>
-        
+
         <i-cell title="人数">
           <i-icon type='group' slot='icon' size='20'></i-icon>
           <div slot="footer">
-            <picker class='inline-block'
-              mode="multiSelector"
-              :value='[3,3]'
-              @change="changePersonNum"
-              :range="personGroup">
+            <picker class='inline-block' mode="multiSelector" :value='[3,3]' @change="changePersonNum" :range="personGroup">
               <span> {{activity.boyNum}} </span>
               <span>男</span>
               <span> {{activity.girlNum}} </span>
               <span>女</span>
             </picker>
-            <i-icon type="feedback" size='20' color='#ff9900' class="person-num-help-icon" @click="popPersonNumTip"/>
+            <i-icon type="feedback" size='20' color='#ff9900' @click="popPersonNumTip" />
           </div>
         </i-cell>
       </i-cell-group>
@@ -72,7 +65,7 @@
       <div class="require-title">
         <i-icon type='success' size='20' color='red' class="required-icon"></i-icon>
         <span class="required-name"> 选填</span>
-        <span class="required-label"> (年龄、信誉值、约定)</span>
+        <span class="required-label"> （年龄、信誉值、约定）</span>
       </div>
       <i-cell-group>
         <i-cell title="报名截止时间">
@@ -90,10 +83,7 @@
         <i-cell title="最晚到场时间">
           <i-icon type='clock' slot='icon' size='20'></i-icon>
           <div slot="footer">
-            <picker
-              @change="changeLastTime"
-              :range="lastTimeGroup"
-              range-key='value'>
+            <picker @change="changeLastTime" :range="lastTimeGroup" range-key='name'>
               <span>{{activity.lastTimeStr?activity.lastTimeStr:'不限'}}</span>
             </picker>
           </div>
@@ -101,10 +91,7 @@
         <i-cell title="年龄">
           <i-icon type='mine' slot='icon' size='20'></i-icon>
           <div slot="footer">
-            <picker
-              @change="changeAge"
-              :range="ageGroup"
-              range-key='value'>
+            <picker @change="changeAge" :range="ageGroup" range-key='name'>
               <span>{{activity.ageStr?activity.ageStr:'不限'}}</span>
             </picker>
           </div>
@@ -112,32 +99,47 @@
         <i-cell title="信誉值">
           <i-icon type='financial_fill' slot='icon' size='20'></i-icon>
           <div slot="footer">
-            <input type="number" placeholder="不限" :model='activity.score' class='score-input inline-block'>
-            <i-icon type="feedback" size='20' color='#ff9900' class="person-num-help-icon inline-block" @click="popScoreTip"/>
+            <input type="number" placeholder="不限" class='score-input inline-block' @blur='blurScore'>
+            <i-icon type="feedback" size='20' color='#ff9900' class="person-num-help-icon inline-block" @click="popScoreTip" />
           </div>
         </i-cell>
         <i-cell title="约定">
           <i-icon type='group' slot='icon' size='20'></i-icon>
           <div slot="footer">
-            <i-icon type="add" size='30' color='#ff9900' class="block" @click="addTag"/>
+            <i-icon type="add" size='30' color='#ff9900' class="block" @click="popTag" />
           </div>
         </i-cell>
-        <div>
-            <i-tag v-for="(item,index) in tags" :key='index'>{{item}}</i-tag>
+        <div class="tag-wrapper">
+          <i-tag v-for="(item,index) in activity.tags" :key="index" checkable='true' @change="changeSelectedTag" :name="item.key" :checked="item.checked" :color="item.color" style="margin:10rpx;">
+            {{item.name}}
+          </i-tag>
         </div>
       </i-cell-group>
     </div>
+    <!-- 下一步 -->
+    <i-button @click="nextStep" type="warning" shape="circle" size="small">下一步</i-button>
+    <!-- 约定 -->
+    <i-modal :visible="openTagWindow" title="约定规则" @ok="chooseTags" :show-cancel='false' ok-text='完成' color='#ff9900'>
+      <i-tag v-for="(item,index) in tagGroup" :key="index" checkable='true' @change="changeTag" :name="item.key" :color="item.color" :checked="item.checked" type="border" style="margin:10rpx;">
+        {{item.name}}
+      </i-tag>
+    </i-modal>
+    <!-- 提示 -->
     <i-toast id="toast" />
+    <!-- 全局提醒 -->
+    <i-message id="message" />
   </div>
 </template>
 
 <script>
+import { getDictGroup } from '@/api/common'
 import { $Message, $Toast } from '~/iview/base/index'
 export default {
   data() {
     return {
       activity: {
         typeName: '',
+        typeKey: '',
         title: '',
         startTime: '',
         startTime_date: '',
@@ -146,125 +148,198 @@ export default {
         endTime_date: '',
         endTime_time: '',
         lastTime: '',
-        lastTimeStr:'',
+        lastTimeStr: '',
         address: '',
         pay: '',
-        payStr:'',
+        payStr: '',
         boyNum: 3,
         girlNum: 3,
         totalNum: 6,
         age: '不限',
         score: '不限',
-        tags: '1,2,3'
+        tags: []
       },
       upIcon: 'unfold',
       openAction: false,
-      actions: [
-        {
-          icon: 'shop_fill',
-          name: '美食',
-        },
-        {
-          icon: 'video_fill',
-          name: '电影',
-        },
-        {
-          icon: 'video_fill',
-          name: 'KTV',
-        },
-        {
-          icon: 'homepage_fill',
-          name: '桌游',
-        },
-        {
-          icon: 'flag_fill',
-          name: '运动',
-        },
-        {
-          icon: 'add',
-          name: '其他',
-        },
-      ],
-      payGroup: [
-        {
-          key: 'NN',
-          value: '男免'
-        },
-        {
-          key: 'MM',
-          value: '女免'
-        }
-      ],
+      typeGroup: [],
+      payGroup: [],
       personGroup: [
         [0, 1, 2, 3, 4, 5, 6, 7, 8, 9],
         [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
       ],
-      lastTimeGroup:[
-        {
-          key:'AA',
-          value:'不限'
-        },
-        {
-          key:'BB',
-          value:'活动开始后5分钟'
-        },
-        {
-          key:'CC',
-          value:'活动开始后10分钟'
-        },
-        {
-          key:'DD',
-          value:'活动开始后15分钟'
-        },
-        {
-          key:'EE',
-          value:'活动开始后20分钟'
-        }
-      ],
-      ageGroup:[
-        {
-          key:'AA',
-          value:'不限',
-        },
-        {
-          key:'BB',
-          value:'95后',
-        },
-        {
-          key:'CC',
-          value:'90后',
-        },
-        {
-          key:'DD',
-          value:'85后',
-        }
-      ]
+      lastTimeGroup: [],
+      ageGroup: [],
+      tagGroup: [],
+      openTagWindow: false
     }
   },
+  created() {
+    this.initDictData()
+  },
   computed: {
-    tags() {
-      return this.activity.tags.split(',')
-    },
     address() {
       return this.$store.state.activityAddress ? this.$store.state.activityAddress : '请选择地址'
     }
   },
   methods: {
-    // 添加约定标签
-    addTag(){
-      
+    // 主题输入框失去焦点时绑定数据
+    blurTitle(e) {
+      this.activity.title = e.target.value
+    },
+    blurScore(e) {
+      this.activity.score = e.target.value
+    },
+    // 下一步
+    nextStep() {
+      // 活动参数处理
+      if (this.checkParams()) {
+        $Message({
+          type: 'success',
+          content: '参数校验通过'
+        })
+      }
+
+    },
+    // 参数校验
+    checkParams() {
+      let activity = this.activity
+      // 活动类型
+      if(!activity.typeKey || activity.typeKey.trim() === ''){
+         $Message({
+          type: 'error',
+          content: '请选择活动类型'
+        })
+        return false
+      }
+      // 主题
+      if (!activity.title || activity.title.trim() === '') {
+        $Message({
+          type: 'error',
+          content: '请填写活动主题'
+        })
+        return false
+      }
+      // 时间
+      if (!activity.startTime_date || !activity.startTime_time) {
+        $Message({
+          type: 'error',
+          content: '请选择活动开始时间'
+        })
+        return false
+      } else {
+        // 拼接开始时间
+        this.activity.startTime = `${activity.startTime_date} ${activity.startTime_time}`
+      }
+      return true
+    },
+    // 初始化字典组
+    initDictData() {
+      // 活动类型
+      getDictGroup('ACTIVITY_TAPE').then(res => {
+        if (res.code === 100) {
+          this.typeGroup = res.data
+        } else {
+          $Message({
+            content: res.msg,
+            type: 'error'
+          })
+        }
+      })
+      // 人均类型
+      getDictGroup('ACTIVITY_BUDGET').then(res => {
+        if (res.code === 100) {
+          this.payGroup = res.data
+        } else {
+          $Message({
+            content: res.msg,
+            type: 'error'
+          })
+        }
+      })
+      // 最晚到场时间
+      getDictGroup('ACTIVITY_TIME_LIMIT').then(res => {
+        if (res.code === 100) {
+          this.lastTimeGroup = res.data
+        } else {
+          $Message({
+            content: res.msg,
+            type: 'error'
+          })
+        }
+      })
+      // 年龄组
+      getDictGroup('USER_AGE').then(res => {
+        if (res.code === 100) {
+          this.ageGroup = res.data
+        } else {
+          $Message({
+            content: res.msg,
+            type: 'error'
+          })
+        }
+      })
+      // 约定
+      getDictGroup('ACTIVITY_CONVENTION').then(res => {
+        if (res.code === 100) {
+          this.tagGroup = res.data
+          this.tagGroup.map(item => {
+            item.checked = false
+            item.color = 'blue'
+            return item
+          })
+        } else {
+          $Message({
+            content: res.msg,
+            type: 'error'
+          })
+        }
+      })
+    },
+    // 弹出约定规则窗口
+    popTag() {
+      this.openTagWindow = true
+    },
+    // 完成选择约定规则
+    chooseTags() {
+      this.openTagWindow = false
+      this.activity.tags = this.tagGroup.filter(item => {
+        return item.checked
+      })
+    },
+    // 选择约定规则
+    changeTag(e) {
+      let key = e.target.name
+      this.tagGroup = this.tagGroup.map(item => {
+        if (item.key === key) {
+          item.checked = !item.checked
+        }
+        return item
+      })
+    },
+    // 取消选择约定规则
+    changeSelectedTag(e) {
+      let key = e.target.name
+      this.tagGroup = this.tagGroup.map(item => {
+        if (item.key === key) {
+          item.checked = !item.checked
+        }
+        return item
+      })
+      this.activity.tags = this.activity.tags.filter(item => {
+        return item.key !== key
+      })
     },
     // 选择年龄
-    changeAge(e){
+    changeAge(e) {
       let ageGroupItem = this.ageGroup[e.target.value]
       this.activity.age = ageGroupItem.key
-      this.activity.ageStr = ageGroupItem.value
+      this.activity.ageStr = ageGroupItem.name
     },
     // 选择最晚到场时间
-    changeLastTime(e){
+    changeLastTime(e) {
       let lastTimeGroupItem = this.lastTimeGroup[e.target.value]
       this.activity.lastTime = lastTimeGroupItem.key
-      this.activity.lastTimeStr = lastTimeGroupItem.value
+      this.activity.lastTimeStr = lastTimeGroupItem.name
     },
     // 选择人数
     changePersonNum(e) {
@@ -281,8 +356,8 @@ export default {
       })
     },
     // 弹出信誉值信息提示
-    popScoreTip(){
-       $Toast({
+    popScoreTip() {
+      $Toast({
         icon: 'redpacket',
         content: '聚友在闪七的活跃程度及受欢迎程度。 参与/发起活动、被点赞等都会增加信誉值; 聚会爽约、迟到等则会被扣除信誉值。',
         duration: 5
@@ -310,10 +385,11 @@ export default {
     chooseType(e) {
       let windowHeight = wx.getSystemInfoSync().windowHeight
       let offset = 48
-      let topY = windowHeight - offset * this.actions.length - 54
+      let topY = windowHeight - offset * this.typeGroup.length - 54
       let index = Math.floor((e.pageY - topY) / offset)
-      if (index > -1 && index < this.actions.length) {
-        this.activity.typeName = this.actions[index].name
+      if (index > -1 && index < this.typeGroup.length) {
+        this.activity.typeName = this.typeGroup[index].name
+        this.activity.typeKey = this.typeGroup[index].key
         this.toggleAction()
       }
 
@@ -330,7 +406,7 @@ export default {
       this.activity.startTime_time = e.target.value
     },
     // 选择报名截止时间
-     changeEndDate(e) {
+    changeEndDate(e) {
       this.activity.endTime_date = e.target.value
     },
     changeEndTime(e) {
@@ -338,7 +414,7 @@ export default {
     },
     // 选择人均
     changePay(e) {
-      this.activity.payStr = this.payGroup[e.target.value].value
+      this.activity.payStr = this.payGroup[e.target.value].name
       this.activity.pay = this.payGroup[e.target.value].key
     }
   }
@@ -381,7 +457,7 @@ export default {
 }
 .required-label {
   color: rgba(0, 0, 0, 0.3);
-  font-size: 18rpx;
+  font-size: 20rpx;
   letter-spacing: 3rpx;
   vertical-align: middle;
 }
@@ -391,9 +467,15 @@ export default {
 .inline-block {
   display: inline-block;
 }
-.score-input{
+.score-input {
   width: 300rpx;
   vertical-align: middle;
 }
-
+.person-num-help-icon {
+  vertical-align: middle;
+}
+.tag-wrapper {
+  background: #fff;
+  padding: 0 25rpx 25rpx 25rpx;
+}
 </style>

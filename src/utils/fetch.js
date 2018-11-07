@@ -7,8 +7,8 @@ const fly = new Fly()
 
 const baseUrl = process.env.NODE_ENV === 'development'
     // 开发环境
-    // ? 'http://127.0.0.1:9999/glod/mp/api/v1/'
-    ? 'https://www.hambook.top/glod/mp/api/v1'
+    ? 'http://127.0.0.1:9999/glod/mp/api/v1/'
+    // ? 'https://www.hambook.top/glod/mp/api/v1'
     // 线上环境
     : 'https://www.hambook.top/glod/mp/api/v1'
 
@@ -24,7 +24,6 @@ fly.interceptors.request.use(request => {
         'content-type': 'application/json',
         'x-access-token': wx.getStorageSync('token') || ''
     }
-    console.log(request.headers)
     // 公共请求参数
     let authParams = {
         'timestamp': new Date().getTime(),
@@ -47,7 +46,6 @@ fly.interceptors.response.use(
         wx.hideLoading()
         let result = response.data
         // 未登录或者没有权限跳转到登录页
-        console.log(result)
         if(result.code === 102){
             wx.navigate({ url: toAbsPath('pages/login/main')})
         }

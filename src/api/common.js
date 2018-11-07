@@ -20,7 +20,22 @@ export const getLocationInfo = ({ latitude, longitude }) => {
 export const getAdList = () => {
     return new Promise(reslove => {
         $http.request({
-            url:''
+            url: ''
+        })
+    })
+}
+
+// 获取字典组
+export const getDictGroup = groupKey => {
+    return new Promise((reslove, reject) => {
+        $http.request({
+            url: 'dictList',
+            method: 'post',
+            body: {
+                groupKey
+            }
+        }).then(res => {
+            reslove(res)
         })
     })
 }
