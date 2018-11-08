@@ -9,8 +9,6 @@ export default {
     },
     [types.SET_ISLOGIN](state,isLogin){
         state.isLogin = isLogin
-    },
-    [types.SET_ACTIVITY_ADDRESS](state,address){
-        state.activityAddress = address
     }
+    
 }
