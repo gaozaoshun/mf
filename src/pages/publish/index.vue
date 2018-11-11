@@ -1,7 +1,12 @@
 <template>
   <div class='wrapper'>
-    <base-activity v-if="!showNext" @nextStep='nextStep'></base-activity>
-    <more-activity v-else ></more-activity>
+    <div v-show="!showNext">
+      <base-activity  @nextStep='nextStep'></base-activity>
+    </div>
+    <div v-show='showNext'>
+      <more-activity @lastStep='lastStep'></more-activity>
+    </div>
+
   </div>
 </template>
 
@@ -12,17 +17,20 @@ import MoreActivity from './more-activity'
 export default {
   data() {
     return {
-      showNext: true
+      showNext: false,
     }
   },
   components: {
-    BaseActivity, 
-    MoreActivity 
+    BaseActivity,
+    MoreActivity
   },
   methods: {
     nextStep(activity) {
       this.showNext = true
-      console.log('stepOne', activity)
+      this.$store.dispatch('setPublishActivity', activity)
+    },
+    lastStep() {
+      this.showNext = false
     }
   }
 }

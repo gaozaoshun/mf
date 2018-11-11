@@ -11,3 +11,7 @@ export const setAddress = ({ commit }, address) => {
 export const setIsLogin = ({ commit }, isLogin) => {
     commit(types.SET_ISLOGIN, isLogin)
 }
+
+export const setPublishActivity = ({ commit }, publishActivity) => {
+    commit(types.SET_PUBLISH_ACTIVITY, publishActivity)
+}

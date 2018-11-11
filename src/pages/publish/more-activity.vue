@@ -17,7 +17,7 @@
                 </div>
             </div>
             <div class="light-content">
-                <i-input mode='wrapped' i-class='light-input' maxlength='150' type='textarea' placeholder='说点什么，让大家更了解你发起的聚会。' :autofocus='true'></i-input>
+                <i-input mode='wrapped' i-class='light-input' maxlength='150' type='textarea' placeholder='说点什么，让大家更了解你发起的聚会。' :autofocus='true' @change="chageBrightSpot"></i-input>
             </div>
         </div>
         <!-- 聚会流程 -->
@@ -33,56 +33,114 @@
                 </div>
             </div>
             <div class="flow-content">
-                <i-steps current="2" direction="vertical">
-                    <i-step>
-                        <div slot="title">集合时间和地点</div>
-                        <div slot="content">
-                            <i-radio-group :current="flowOneIndex" @change="changeFlowOne">
-                                <i-radio i-class='vertail' v-for="(item,index) in placeAndTimeGroup" :key="index" :value="item.name" color='#ff9900'>
-                                </i-radio>
-                            </i-radio-group>
-                        </div>
-                    </i-step>
-                    <i-step>
-                        <div slot="title">聚会进行时</div>
-                        <div slot="content">
-                            这里是该步骤的描述信息
-                        </div>
-                    </i-step>
-                    <i-step>
-                        <div slot="title">聚会结束/下半场安排</div>
-                        <div slot="content">
-                            这里是该步骤的描述信息
-                        </div>
-                    </i-step>
-                </i-steps>
+                <flow :step='1' :title='stepOneTitle' :content='placeAndTimeGroup' @chooseItem='chooseStepOne'></flow>
+                <flow :step='2' :title='stepTwoTitle' :content='ingGroup' @chooseItem='chooseStepTwo'></flow>
+                <flow :step='3' :title='stepThreeTitle' :content='endGroup' @chooseItem='chooseStepThree'></flow>
             </div>
         </div>
+        <!-- 上一步 -->
+        <i-button @click="lastStep" type="ghost" shape="circle" size="small">上一步</i-button>
+        <!-- 下一步 -->
+        <i-button @click="nextStep" type="warning" shape="circle" size="small">下一步</i-button>
         <i-message id='message'></i-message>
     </div>
 </template>
 <script>
 import { getDictGroup } from '@/api/common'
+import { publishActivity } from '@/api/activity'
 import { $Message, $Toast } from '~/iview/base/index'
+import Flow from '@/components/flow'
+
 export default {
+    props: {
+
+    },
     data() {
         return {
-            flowOneIndex: '',
-            placeAndTimeGroup: []
+            activity: {
+                brightSpot: '',
+                activityFlow: []
+            },
+            stepOneTitle: '集合时间和地点',
+            stepTwoTitle: '聚会进行时',
+            stepThreeTitle: '聚会结束/下半场安排',
+            placeAndTimeGroup: [],
+            ingGroup: [],
+            endGroup: []
         }
     },
     created() {
         this.initDictGroup()
     },
-    components: {},
+    computed: {
+        lastActivity() {
+            return this.$store.state.publishActivity
+        }
+    },
+    components: { Flow },
     methods: {
+        // 上一步
+        lastStep() {
+            this.$emit('lastStep')
+        },
+        //下一步
+        nextStep() {
+            if (this.checkParams()) {
+                let params = Object.assign(this.lastActivity, this.activity)
+                publishActivity(params).then(res => {
+                    if (res.code === 100) {
+
+                    } else {
+                        $Message({
+                            type: 'error',
+                            content: res.msg
+                        })
+                    }
+                })
+            }
+
+        },
+        checkParams() {
+            let activity = this.activity
+            if (activity.activityFlow.length < 3) {
+                $Message({
+                    type: 'error',
+                    content: '请组织好聚会流程'
+                })
+                return false
+            }
+            return true
+        },
+        chageBrightSpot(e) {
+            this.activity.brightSpot = e.target.detail.value
+        },
         initDictGroup() {
-            // 初始化集合地点数组
-            // 活动类型
+            // 集合时间和地点
             getDictGroup('PLACE_AND_TIME').then(res => {
                 if (res.code === 100) {
                     this.placeAndTimeGroup = res.data
-                    console.log(this.placeAndTimeGroup)
+                } else {
+                    $Message({
+                        content: res.msg,
+                        type: 'error'
+                    })
+                }
+            })
+            // 聚会进行时
+            getDictGroup('ACTIVITY_IN_TIME').then(res => {
+                if (res.code === 100) {
+                    this.ingGroup = res.data
+                } else {
+                    $Message({
+                        content: res.msg,
+                        type: 'error'
+                    })
+                }
+            })
+            // 聚会结束
+            getDictGroup('ACTIVITY_OVER_TIME').then(res => {
+                if (res.code === 100) {
+                    this.endGroup = res.data
                 } else {
                     $Message({
                         content: res.msg,
@@ -91,9 +149,16 @@ export default {
                 }
             })
         },
-        changeFlowOne(e) {
-            console.log(e)
+        chooseStepOne(stepInfo) {
+            this.activity.activityFlow[0] = stepInfo
+        },
+        chooseStepTwo(stepInfo) {
+            this.activity.activityFlow[1] = stepInfo
+        },
+        chooseStepThree(stepInfo) {
+            this.activity.activityFlow[2] = stepInfo
         }
+
     }
 }
 </script>
@@ -157,9 +222,9 @@ export default {
 .flow-content {
   padding: 40rpx 20rpx;
 }
-.vertail{
-    vertical-align: middle;
-    display: inline;
+.vertail {
+  vertical-align: middle;
+  display: inline;
 }
 </style>
 

@@ -1,173 +1,174 @@
 <template>
     <div>
-    <div id='step-one'>
-      <!-- 活动类型 -->
-    <div class="type" @click='toggleAction'>
-      <span class="type-name">{{activity.typeName?activity.typeName:'选择活动类型'}} </span>
-      <i-icon class='type-icon' :type='upIcon' size='20' color='#ff9900'></i-icon>
-    </div>
-    <i-action-sheet :visible="openAction" :actions="typeGroup" show-cancel @cancel="cancelType" @click="chooseType">
-      <div slot="header" style="padding: 16px">选择活动类型</div>
-    </i-action-sheet>
-    <!-- 必填 -->
-    <div class="required">
-      <div class="require-title">
-        <i-icon type='warning' size='20' color='red' class="required-icon"></i-icon>
-        <span class="required-name"> 必填</span>
-      </div>
-      <i-cell-group>
-        <i-cell title="主题">
-          <i-icon type='integral' slot='icon' size='20'></i-icon>
-          <input slot='footer' type="text" :value='activity.title' placeholder="一句话介绍聚会" class="cell-input" maxlength='15' @blur='blurTitle'>
-        </i-cell>
-        <i-cell title="时间">
-          <i-icon type='clock' slot='icon' size='20'></i-icon>
-          <div slot='footer'>
-            <picker mode="date" start="2018-11-07" end="2099-11-07" class='inline-block' @change='changeStartDate'>
-              <span>{{activity.startTime_date?activity.startTime_date:'选择日期'}}</span>
-            </picker>
-            <span> | </span>
-            <picker mode="time" start="00:00" end="23:59" class='inline-block' @change='changeStartTime'>
-              <span>{{activity.startTime_time?activity.startTime_time:'选择时间'}}</span>
-            </picker>
-          </div>
-        </i-cell>
-        <i-cell title="地点">
-          <i-icon type='coordinates' slot='icon' size='20'></i-icon>
-          <div slot="footer">
-            <span @click='chooseAddress'>{{activity.address?activity.address:'请选择地址'}}</span>
-          </div>
-        </i-cell>
-        <i-cell title="人均">
-          <i-icon type='redpacket' slot='icon' size='20'></i-icon>
-          <div slot='footer'>
-            <picker @change="changePay" :range="payGroup" range-key='name'>
-              <span>{{activity.payStr}}</span>
-            </picker>
-          </div>
-        </i-cell>
+        <div id='step-one'>
+            <!-- 活动类型 -->
+            <div class="type" @click='toggleAction'>
+                <span class="type-name">{{activity.typeName?activity.typeName:'选择活动类型'}} </span>
+                <i-icon class='type-icon' :type='upIcon' size='20' color='#ff9900'></i-icon>
+            </div>
+            <i-action-sheet :visible="openAction" :actions="typeGroup" show-cancel @cancel="cancelType" @click="chooseType">
+                <div slot="header" style="padding: 16px">选择活动类型</div>
+            </i-action-sheet>
+            <!-- 必填 -->
+            <div class="required">
+                <div class="require-title">
+                    <i-icon type='warning' size='20' color='red' class="required-icon"></i-icon>
+                    <span class="required-name"> 必填</span>
+                </div>
+                <i-cell-group>
+                    <i-cell title="主题">
+                        <i-icon type='integral' slot='icon' size='20'></i-icon>
+                        <input slot='footer' type="text" :value='activity.title' placeholder="一句话介绍聚会" class="cell-input" maxlength='15' @blur='blurTitle'>
+                    </i-cell>
+                    <i-cell title="时间">
+                        <i-icon type='clock' slot='icon' size='20'></i-icon>
+                        <div slot='footer'>
+                            <picker mode="date" start="2018-11-07" end="2099-11-07" class='inline-block' @change='changeStartDate'>
+                                <span>{{activity.startTime_date?activity.startTime_date:'选择日期'}}</span>
+                            </picker>
+                            <span> | </span>
+                            <picker mode="time" start="00:00" end="23:59" class='inline-block' @change='changeStartTime'>
+                                <span>{{activity.startTime_time?activity.startTime_time:'选择时间'}}</span>
+                            </picker>
+                        </div>
+                    </i-cell>
+                    <i-cell title="地点">
+                        <i-icon type='coordinates' slot='icon' size='20'></i-icon>
+                        <div slot="footer">
+                            <span @click='chooseAddress'>{{activity.address?activity.address:'请选择地址'}}</span>
+                        </div>
+                    </i-cell>
+                    <i-cell title="人均">
+                        <i-icon type='redpacket' slot='icon' size='20'></i-icon>
+                        <div slot='footer'>
+                            <picker @change="changePay" :range="payGroup" range-key='name'>
+                                <span>{{activity.payStr}}</span>
+                            </picker>
+                        </div>
+                    </i-cell>
 
-        <i-cell title="人数">
-          <i-icon type='group' slot='icon' size='20'></i-icon>
-          <div slot="footer">
-            <picker class='inline-block' mode="multiSelector" :value='[3,3]' @change="changePersonNum" :range="personGroup">
-              <span> {{activity.boyNum}} </span>
-              <span>男</span>
-              <span> {{activity.girlNum}} </span>
-              <span>女</span>
-            </picker>
-            <i-icon type="feedback" size='20' color='#ff9900' @click="popPersonNumTip" />
-          </div>
-        </i-cell>
-      </i-cell-group>
-    </div>
-    <!-- 选填 -->
-    <div class="required">
-      <div class="require-title">
-        <i-icon type='success' size='20' color='red' class="required-icon"></i-icon>
-        <span class="required-name"> 选填</span>
-        <span class="required-label"> （年龄、信誉值、约定）</span>
-      </div>
-      <i-cell-group>
-        <i-cell title="报名截止时间">
-          <i-icon type='clock_fill' slot='icon' size='20'></i-icon>
-          <div slot='footer'>
-            <picker mode="date" start="2018-11-07" end="2099-11-07" class='inline-block' @change='changeEndDate'>
-              <span>{{activity.endTime_date?activity.endTime_date:'选择日期'}}</span>
-            </picker>
-            <span> | </span>
-            <picker mode="time" start="00:00" end="23:59" class='inline-block' @change='changeEndTime'>
-              <span>{{activity.endTime_time?activity.endTime_time:'选择时间'}}</span>
-            </picker>
-          </div>
-        </i-cell>
-        <i-cell title="最晚到场时间">
-          <i-icon type='clock' slot='icon' size='20'></i-icon>
-          <div slot="footer">
-            <picker @change="changeLastTime" :range="lastTimeGroup" range-key='name'>
-              <span>{{activity.lastTimeStr}}</span>
-            </picker>
-          </div>
-        </i-cell>
-        <i-cell title="年龄">
-          <i-icon type='mine' slot='icon' size='20'></i-icon>
-          <div slot="footer">
-            <picker @change="changeAge" :range="ageGroup" range-key='name'>
-              <span>{{activity.ageStr?activity.ageStr:'不限'}}</span>
-            </picker>
-          </div>
-        </i-cell>
-        <i-cell title="信誉值">
-          <i-icon type='financial_fill' slot='icon' size='20'></i-icon>
-          <div slot="footer">
-            <input type="number" placeholder="不限" class='score-input inline-block' @blur='blurScore'>
-            <i-icon type="feedback" size='20' color='#ff9900' class="person-num-help-icon inline-block" @click="popScoreTip" />
-          </div>
-        </i-cell>
-        <i-cell title="约定">
-          <i-icon type='group' slot='icon' size='20'></i-icon>
-          <div slot="footer">
-            <i-icon type="add" size='30' color='#ff9900' class="block" @click="popTag" />
-          </div>
-        </i-cell>
-        <div class="tag-wrapper">
-          <i-tag v-for="(item,index) in activity.tags" :key="index" checkable='true' @change="changeSelectedTag" :name="item.key" :checked="item.checked" :color="item.color" style="margin:10rpx;">
-            {{item.name}}
-          </i-tag>
+                    <i-cell title="人数">
+                        <i-icon type='group' slot='icon' size='20'></i-icon>
+                        <div slot="footer">
+                            <picker class='inline-block' mode="multiSelector" @change="changePersonNum" :range="personGroup">
+                                <span> {{activity.preBoyNum}} </span>
+                                <span>男</span>
+                                <span> {{activity.preBoyNum}} </span>
+                                <span>女</span>
+                            </picker>
+                            <i-icon type="feedback" size='20' color='#ff9900' @click="popPersonNumTip" />
+                        </div>
+                    </i-cell>
+                </i-cell-group>
+            </div>
+            <!-- 选填 -->
+            <div class="required">
+                <div class="require-title">
+                    <i-icon type='success' size='20' color='red' class="required-icon"></i-icon>
+                    <span class="required-name"> 选填</span>
+                    <span class="required-label"> （年龄、信誉值、约定）</span>
+                </div>
+                <i-cell-group>
+                    <i-cell title="报名截止时间">
+                        <i-icon type='clock_fill' slot='icon' size='20'></i-icon>
+                        <div slot='footer'>
+                            <picker mode="date" start="2018-11-07" end="2099-11-07" class='inline-block' @change='changeEndDate'>
+                                <span>{{activity.endTime_date?activity.endTime_date:'选择日期'}}</span>
+                            </picker>
+                            <span> | </span>
+                            <picker mode="time" start="00:00" end="23:59" class='inline-block' @change='changeEndTime'>
+                                <span>{{activity.endTime_time?activity.endTime_time:'选择时间'}}</span>
+                            </picker>
+                        </div>
+                    </i-cell>
+                    <i-cell title="最晚到场时间">
+                        <i-icon type='clock' slot='icon' size='20'></i-icon>
+                        <div slot="footer">
+                            <picker @change="changeLastTime" :range="lastTimeGroup" range-key='name'>
+                                <span>{{activity.lastTimeStr}}</span>
+                            </picker>
+                        </div>
+                    </i-cell>
+                    <i-cell title="年龄">
+                        <i-icon type='mine' slot='icon' size='20'></i-icon>
+                        <div slot="footer">
+                            <picker @change="changeAge" :range="ageGroup" range-key='name'>
+                                <span>{{activity.ageStr?activity.ageStr:'不限'}}</span>
+                            </picker>
+                        </div>
+                    </i-cell>
+                    <i-cell title="信誉值">
+                        <i-icon type='financial_fill' slot='icon' size='20'></i-icon>
+                        <div slot="footer">
+                            <input type="number" placeholder="不限" class='score-input inline-block' @blur='blurScore'>
+                            <i-icon type="feedback" size='20' color='#ff9900' class="person-num-help-icon inline-block" @click="popScoreTip" />
+                        </div>
+                    </i-cell>
+                    <i-cell title="约定">
+                        <i-icon type='group' slot='icon' size='20'></i-icon>
+                        <div slot="footer">
+                            <i-icon type="add" size='30' color='#ff9900' class="block" @click="popTag" />
+                        </div>
+                    </i-cell>
+                    <div class="tag-wrapper">
+                        <i-tag v-for="(item,index) in activity.tags" :key="index" checkable='true' @change="changeSelectedTag" :name="item.key" :checked="item.checked" :color="item.color" style="margin:10rpx;">
+                            {{item.name}}
+                        </i-tag>
+                    </div>
+                </i-cell-group>
+            </div>
+            <!-- 下一步 -->
+            <i-button @click="nextStep" type="warning" shape="circle" size="small">下一步</i-button>
+            <!-- 约定 -->
+            <i-modal :visible="openTagWindow" title="约定规则" @ok="chooseTags" :show-cancel='false' ok-text='完成' color='#ff9900'>
+                <i-tag v-for="(item,index) in tagGroup" :key="index" checkable='true' @change="changeTag" :name="item.key" :color="item.color" :checked="item.checked" type="border" style="margin:10rpx;">
+                    {{item.name}}
+                </i-tag>
+            </i-modal>
         </div>
-      </i-cell-group>
-    </div>
-    <!-- 下一步 -->
-    <i-button @click="nextStep" type="warning" shape="circle" size="small">下一步</i-button>
-    <!-- 约定 -->
-    <i-modal :visible="openTagWindow" title="约定规则" @ok="chooseTags" :show-cancel='false' ok-text='完成' color='#ff9900'>
-      <i-tag v-for="(item,index) in tagGroup" :key="index" checkable='true' @change="changeTag" :name="item.key" :color="item.color" :checked="item.checked" type="border" style="margin:10rpx;">
-        {{item.name}}
-      </i-tag>
-    </i-modal>
-    </div>
-    <!-- 提示 -->
-    <i-toast id="toast" />
-    <!-- 全局提醒 -->
-    <i-message id="message" />
+        <!-- 提示 -->
+        <i-toast id="toast" />
+        <!-- 全局提醒 -->
+        <i-message id="message" />
     </div>
 </template>
 <script>
-import { getDictGroup } from '@/api/common'
+import { getDictGroup, getLocationInfo } from '@/api/common'
 import { $Message, $Toast } from '~/iview/base/index'
+import { compare } from '@/utils/date'
 export default {
     data() {
         return {
             activity: {
-                typeName: '',
-                typeKey: '',
-                title: '',
-                startTime: '',
-                startTime_date: '',
-                startTime_time: '',
-                endTime: '',
+                typeName: '运动',
+                type: 'SPORTS',
+                title: '白云山夜跑',
+                activityTime: '2018-11-10 00:00',
+                startTime_date: '2018-11-10',
+                startTime_time: '00:00',
+                enrolmentTime: '',
                 endTime_date: '',
                 endTime_time: '',
                 lastTime: '',
                 lastTimeStr: '',
-                address: '',
-                pay: '',
+                address: '陈家祠',
+                perPay: '',
                 payStr: '',
-                boyNum: 3,
-                girlNum: 3,
+                preBoyNum: 3,
+                preGirlNum: 3,
                 totalNum: 6,
                 age: '',
                 score: '',
-                tags: []
+                tags: [],
+                coordinate: '',
+                city: '',
+                region: ''
             },
             upIcon: 'unfold',
             openAction: false,
             typeGroup: [],
             payGroup: [],
-            personGroup: [
-                [0, 1, 2, 3, 4, 5, 6, 7, 8, 9],
-                [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
-            ],
+            personGroup: [],
             lastTimeGroup: [],
             ageGroup: [],
             tagGroup: [],
@@ -177,6 +178,7 @@ export default {
     },
     created() {
         this.initDictData()
+      
     },
     computed: {
 
@@ -204,7 +206,7 @@ export default {
         checkParams() {
             let activity = this.activity
             // 活动类型
-            if (!activity.typeKey || activity.typeKey.trim() === '') {
+            if (!activity.type || activity.type.trim() === '') {
                 $Message({
                     type: 'error',
                     content: '请选择活动类型'
@@ -228,7 +230,15 @@ export default {
                 return false
             } else {
                 // 拼接开始时间
-                this.activity.startTime = `${activity.startTime_date} ${activity.startTime_time}`
+                this.activity.activityTime = `${activity.startTime_date} ${activity.startTime_time}:00`
+                // 开始时间要大于现在
+                if (compare(this.activity.activityTime, new Date()) < 1) {
+                    $Message({
+                        type: 'error',
+                        content: '活动开始时间不能小于当前时间'
+                    })
+                    return false
+                }
             }
             // 地址
             if (!activity.address || activity.address.trim() === '') {
@@ -239,7 +249,7 @@ export default {
                 return false
             }
             // 人数
-            if (activity.boyNum === 0 && activity.girlNum === 0) {
+            if (activity.preBoyNum === 0 && activity.preGirlNum === 0) {
                 $Message({
                     type: 'error',
                     content: '男女人数不能都为0'
@@ -247,14 +257,29 @@ export default {
                 return false
             } else {
                 // 总人数
-                this.activity.totalNum = activity.boyNum + activity.girlNum
+                this.activity.totalNum = activity.preBoyNum + activity.preGirlNum
             }
             // 报名截止时间
             if (!activity.endTime_date || !activity.endTime_time) {
-                this.activity.endTime = ''
+                this.activity.enrolmentTime = ''
             } else {
                 // 拼接时间
-                this.activity.endTime = `${activity.endTime_date} ${activity.endTime_time}`
+                this.activity.enrolmentTime = `${activity.endTime_date} ${activity.endTime_time}:00`
+                 if (compare(this.activity.enrolmentTime, new Date()) < 1) {
+                    $Message({
+                        type: 'error',
+                        content: '报名截止时间不能小于当前时间'
+                    })
+                    return false
+                }
+                // 报名截止时间要小于活动开始时间
+                if (compare(this.activity.enrolmentTime, this.activity.activityTime) > -1) {
+                    $Message({
+                        type: 'error',
+                        content: '报名截止时间要小于活动开始时间'
+                    })
+                    return false
+                }
             }
             // 信誉值
             if (!activity.score || activity.score.trim() === '') {
@@ -287,7 +312,7 @@ export default {
             getDictGroup('ACTIVITY_BUDGET').then(res => {
                 if (res.code === 100) {
                     this.payGroup = res.data
-                    this.activity.pay = this.payGroup[0].key
+                    this.activity.perPay = this.payGroup[0].key
                     this.activity.payStr = this.payGroup[0].name
                 } else {
                     $Message({
@@ -315,6 +340,25 @@ export default {
                     this.ageGroup = res.data
                     this.activity.age = this.ageGroup[0].key
                     this.activity.ageStr = this.ageGroup[0].name
+                } else {
+                    $Message({
+                        content: res.msg,
+                        type: 'error'
+                    })
+                }
+            })
+            // 男女人数
+            getDictGroup('PEOPLES').then(res => {
+                if (res.code === 100) {
+                    let boyGroup = []
+                    let girlGroup = []
+                    res.data.forEach(item => {
+                        boyGroup.push(item.name)
+                        girlGroup.push(item.name)
+                    })
+                    this.personGroup = [boyGroup, girlGroup]
+                    this.activity.preBoyNum = this.personGroup[0][0]
+                    this.activity.preGirlNum = this.personGroup[1][0]
                 } else {
                     $Message({
                         content: res.msg,
@@ -388,8 +432,8 @@ export default {
         // 选择人数
         changePersonNum(e) {
             let indexs = e.target.value
-            this.activity.boyNum = this.personGroup[0][indexs[0]]
-            this.activity.girlNum = this.personGroup[1][indexs[1]]
+            this.activity.preBoyNum = this.personGroup[0][indexs[0]]
+            this.activity.preGirlNum = this.personGroup[1][indexs[1]]
         },
         // 弹出人数信息提示
         popPersonNumTip() {
@@ -411,7 +455,17 @@ export default {
         chooseAddress() {
             wx.chooseLocation({
                 success: res => {
+                    console.log('地址', res)
                     this.activity.address = res.name
+                    this.activity.coordinate = `${res.longitude},${res.latitude}`
+                    getLocationInfo({ latitude: res.latitude, longitude: res.longitude }).then(res => {
+                        console.log(res)
+                        if (res.status === '1') {
+                            this.activity.city = res.regeocode.addressComponent.city.length > 0 ? res.regeocode.addressComponent.city : res.regeocode.addressComponent.province
+                            this.activity.region = res.regeocode.addressComponent.district
+                        }
+                        console.log('获取城市', this.activity)
+                    })
                 }
             })
         },
@@ -430,7 +484,7 @@ export default {
             let index = Math.floor((e.pageY - topY) / offset)
             if (index > -1 && index < this.typeGroup.length) {
                 this.activity.typeName = this.typeGroup[index].name
-                this.activity.typeKey = this.typeGroup[index].key
+                this.activity.type = this.typeGroup[index].key
                 this.toggleAction()
             }
         },
@@ -455,7 +509,7 @@ export default {
         // 选择人均
         changePay(e) {
             this.activity.payStr = this.payGroup[e.target.value].name
-            this.activity.pay = this.payGroup[e.target.value].key
+            this.activity.perPay = this.payGroup[e.target.value].key
         }
     }
 }

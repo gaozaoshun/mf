@@ -9,6 +9,9 @@ export default {
     },
     [types.SET_ISLOGIN](state,isLogin){
         state.isLogin = isLogin
+    },
+    [types.SET_PUBLISH_ACTIVITY](state, publishActivity) {
+        state.publishActivity = publishActivity
     }
     
 }

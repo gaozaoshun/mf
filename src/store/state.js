@@ -2,7 +2,8 @@
 export const state = {
     userInfo: {},
     address: {},
-    isLogin: false
+    isLogin: false,
+    publishActivity:{}
 }
 
 export default state

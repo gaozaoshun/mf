@@ -84,3 +84,23 @@ export function parseToNow(date) {
         return '1小时内'
     }
 }
+function standardTime(timeStr) {
+    return timeStr.replace(/-/g, ',')
+}
+// 日期比较
+export const compare = (date1, date2) => {
+    if (typeof date1 ===  'string') {
+        date1 = new Date(standardTime(date1))
+    }
+    if (typeof date2 === 'string') {
+        date2 = new Date(standardTime(date2))
+    }
+    if (date1 > date2) {
+        return 1
+    } else if (date1 < date2) {
+        return -1
+    } else {
+        return 0
+    }
+}
+

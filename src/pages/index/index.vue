@@ -255,7 +255,6 @@ export default {
     },
   },
   created() {
-    console.log('5656')
     // 0.检查用户权限
     this.checkUserInfoAutho()
 
