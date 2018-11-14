@@ -1,5 +1,7 @@
 {
   "navigationBarTitleText": "发起活动",
+  "enablePullDownRefresh": true,
+  "backgroundTextStyle": "dark",
   "usingComponents": {
     "i-message": "../../../static/iview/message/index",
     "i-icon": "../../../static/iview/icon/index",

@@ -1,21 +1,38 @@
 <template>
   <div class="wrapper">
     <!-- 广告位 -->
-    <swiper class='swiper' :indicator-dots='adConfig.indicatorDots' :indicator-color='adConfig.indicatorColor' :indicator-active-color='adConfig.indicatorActiveColor' :autoplay='adConfig.autoplay' :interval='adConfig.interval' :duration='adConfig.duration' :circular='adConfig.circular'>
-      <div v-for="item in adList" :key='index' @click='toPath(item.path)'>
+    <swiper class='swiper'
+            :indicator-dots='adConfig.indicatorDots'
+            :indicator-color='adConfig.indicatorColor'
+            :indicator-active-color='adConfig.indicatorActiveColor'
+            :autoplay='adConfig.autoplay'
+            :interval='adConfig.interval'
+            :duration='adConfig.duration'
+            :circular='adConfig.circular'>
+      <div v-for="(item,index) in adList"
+           :key='index'
+           @click='toPath(item.path)'>
         <swiper-item>
-          <img :src="item.cover" class='swiper-img' />
+          <img :src="item.cover"
+               class='swiper-img' />
         </swiper-item>
       </div>
     </swiper>
     <!-- 筛选Tabs -->
-    <tab></tab>
+    <tab @changeTab='changeTab'
+         @changeCity='changeCity'></tab>
     <!-- 通告栏 -->
-    <i-notice-bar icon="systemprompt" color="#ff9900" loop closable>
+    <i-notice-bar icon="systemprompt"
+                  color="#ff9900"
+                  loop
+                  closable>
       所有聚会满6人即组队成功，并会有聚会短信通知;
     </i-notice-bar>
     <!-- 活动列表 -->
-    <div v-for="item in activityList" :key="index" class="activity">
+    <div v-for="(item,index) in activityList"
+         :key="index"
+         class="activity"
+         @click="toDetail(item)">
       <activity-card :activity='item'></activity-card>
     </div>
     <!-- 全局提醒 -->
@@ -26,6 +43,7 @@
 <script>
 import { login } from "@/api/login"
 import * as api from "@/api/common"
+import { getActivityList } from '@/api/activity'
 import { getCurrentRoute, toAbsPath } from '@/utils/route'
 import tab from '@/components/tab'
 import activityCard from '@/components/activity-card'
@@ -34,6 +52,8 @@ export default {
   components: { tab, activityCard },
   data() {
     return {
+      pageNum: 1,
+      pageSize: 10,
       isfinish: false,
       adConfig: {
         indicatorDots: true,//是否显示面板指示点
@@ -146,6 +166,22 @@ export default {
     }
   },
   methods: {
+    // 到详情页
+    toDetail(item) {
+      wx.navigateTo({
+        url: `/pages/detail/main?id=${item.id}`
+      })
+    },
+    // 切换城市
+    changeCity(city) {
+      getActivityList({ address: city.addStr, pageNum: this.pageNum, pageSize: this.pageSize }).then(res => {
+        console.log(res)
+      })
+    },
+    // 切换Tab
+    changeTab(item) {
+      console.log(item)
+    },
     // 跳转至落地页
     toPath(url) {
       wx.navigateTo({
@@ -265,7 +301,7 @@ export default {
 </script>
 
 <style scoped>
-.wrapper{
+.wrapper {
   width: 750rpx;
 }
 .swiper {

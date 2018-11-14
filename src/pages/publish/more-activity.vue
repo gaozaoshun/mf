@@ -47,6 +47,7 @@
 </template>
 <script>
 import { getDictGroup } from '@/api/common'
+import { computedSeconds } from '@/utils/date'
 import { publishActivity } from '@/api/activity'
 import { $Message, $Toast } from '~/iview/base/index'
 import Flow from '@/components/flow'
@@ -66,8 +67,23 @@ export default {
             stepThreeTitle: '聚会结束/下半场安排',
             placeAndTimeGroup: [],
             ingGroup: [],
-            endGroup: []
+            endGroup: [],
+            refreshTime: ''
         }
+    },
+    onPullDownRefresh() {
+        if (this.refreshTime && computedSeconds(new Date(), this.refreshTime) < 10) {
+            wx.stopPullDownRefresh()
+            $Message({
+                type: 'warning',
+                content: '服务繁忙~请稍后重试！',
+            })
+        } else {
+            this.refreshTime = new Date()
+            this.initDictGroup()
+        }
+
+
     },
     created() {
         this.initDictGroup()
@@ -114,39 +130,18 @@ export default {
         chageBrightSpot(e) {
             this.activity.brightSpot = e.target.detail.value
         },
-        initDictGroup() {
+        async initDictGroup() {
             // 集合时间和地点
-            getDictGroup('PLACE_AND_TIME').then(res => {
-                if (res.code === 100) {
-                    this.placeAndTimeGroup = res.data
-                } else {
-                    $Message({
-                        content: res.msg,
-                        type: 'error'
-                    })
-                }
-            })
+            let PLACE_AND_TIME = getDictGroup('PLACE_AND_TIME')
             // 聚会进行时
-            getDictGroup('ACTIVITY_IN_TIME').then(res => {
-                if (res.code === 100) {
-                    this.ingGroup = res.data
-                } else {
-                    $Message({
-                        content: res.msg,
-                        type: 'error'
-                    })
-                }
-            })
+            let ACTIVITY_IN_TIME = getDictGroup('ACTIVITY_IN_TIME')
             // 聚会结束
-            getDictGroup('ACTIVITY_OVER_TIME').then(res => {
-                if (res.code === 100) {
-                    this.endGroup = res.data
-                } else {
-                    $Message({
-                        content: res.msg,
-                        type: 'error'
-                    })
-                }
+            let ACTIVITY_OVER_TIME = getDictGroup('ACTIVITY_OVER_TIME')
+            Promise.all([PLACE_AND_TIME, ACTIVITY_IN_TIME, ACTIVITY_OVER_TIME]).then(list => {
+                this.placeAndTimeGroup = list[0]
+                this.ingGroup = list[1]
+                this.endGroup = list[2]
+                wx.stopPullDownRefresh()
             })
         },
         chooseStepOne(stepInfo) {

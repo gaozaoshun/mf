@@ -89,7 +89,7 @@ function standardTime(timeStr) {
 }
 // 日期比较
 export const compare = (date1, date2) => {
-    if (typeof date1 ===  'string') {
+    if (typeof date1 === 'string') {
         date1 = new Date(standardTime(date1))
     }
     if (typeof date2 === 'string') {
@@ -102,5 +102,16 @@ export const compare = (date1, date2) => {
     } else {
         return 0
     }
+}
+// 相差的秒数
+export const computedSeconds = (date1, date2) => {
+    if (typeof date1 === 'string') {
+        date1 = new Date(standardTime(date1))
+    }
+    if (typeof date2 === 'string') {
+        date2 = new Date(standardTime(date2))
+    }
+    console.log(Math.floor((date1.getTime() - date2.getTime()) / 1000))
+    return Math.floor((date1.getTime() - date2.getTime()) / 1000)
 }
 

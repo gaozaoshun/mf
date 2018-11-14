@@ -6,7 +6,7 @@
     <div v-show='showNext'>
       <more-activity @lastStep='lastStep'></more-activity>
     </div>
-
+  
   </div>
 </template>
 
