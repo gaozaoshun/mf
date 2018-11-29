@@ -1,8 +1,21 @@
 <template>
     <div class="wrapper">
+<<<<<<< HEAD
         <div class="item bg" @click="chooseCity"><i class="iconfont mf-zuobiao"></i><span class="vertial zb">{{city.addStr?city.addStr:'全国'}}</span><i class="iconfont mf-down"></i></div>
         <div class="item" v-for='(item,index) in tabs' :key="index" @click="tab(item)">
             <span class="vertial" :class="{'checked':item.checked}">{{item.name}}</span>
+=======
+        <picker mode="region"
+                @change="chooseCity">
+            <div class="item bg"><i class="iconfont mf-zuobiao"></i><span class="vertial zb">{{city}}</span><i class="iconfont mf-down"></i></div>
+        </picker>
+        <div class="item"
+             v-for='(item,index) in tabs'
+             :key='index'>
+            <span class="vertial"
+                  @click='changeTab(item)'
+                  :class='{"tab-bg":item.isTab}'>{{item.name}}</span>
+>>>>>>> 71169d603d1cc079a2622898a6c75303ef1ae805
         </div>
     </div>
 </template>
@@ -20,6 +33,7 @@ export default {
             return this.$store.state.address
         }
     },
+<<<<<<< HEAD
     watch: {
         isLoad() {
             let curItem = {
@@ -29,6 +43,24 @@ export default {
             curItem.city = this.city.addStr
             curItem.coordinate = this.city.location
             this.$emit('tab', curItem)
+=======
+    data() {
+        return {
+            tabs: [
+                {
+                    name: '最快开启',
+                    isTab: true
+                },
+                {
+                    name: '离我最近',
+                    isTab: false
+                },
+                {
+                    name: '参与人数',
+                    isTab: false
+                },
+            ]
+>>>>>>> 71169d603d1cc079a2622898a6c75303ef1ae805
         }
     },
     data() {
@@ -56,6 +88,7 @@ export default {
     methods: {
         // 选择城市
         chooseCity(e) {
+<<<<<<< HEAD
             wx.chooseLocation({
                 success: res => {
                     let address = {
@@ -81,6 +114,25 @@ export default {
             curItem.city = this.city.addStr
             curItem.coordinate = this.city.location
             this.$emit('tab', curItem)
+=======
+            let address = {
+                addStr: e.target.value[1],
+                citycode: e.target.code[1]
+            }
+            this.$store.dispatch('setAddress', address)
+            this.$emit('changeCity',address)
+        },
+        // 切换Tab
+        changeTab(curItem) {
+            this.tabs.map(item => {
+                if (curItem.name === item.name) {
+                    item.isTab = true
+                } else {
+                    item.isTab = false
+                }
+            })
+            this.$emit('changeTab', curItem)
+>>>>>>> 71169d603d1cc079a2622898a6c75303ef1ae805
         }
     }
 }
@@ -97,10 +149,13 @@ export default {
   line-height: 50rpx;
   font-size: 25rpx;
 }
+<<<<<<< HEAD
 .checked {
   color: #ff9900;
   font-weight: bolder;
 }
+=======
+>>>>>>> 71169d603d1cc079a2622898a6c75303ef1ae805
 .vertial {
   vertical-align: top;
   padding-left: 5rpx;
@@ -118,6 +173,10 @@ export default {
   overflow: hidden;
   text-overflow: clip;
   white-space: nowrap;
+}
+.tab-bg {
+  color: #ff9900;
+  font-weight: bolder;
 }
 </style>
 

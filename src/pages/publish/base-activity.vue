@@ -132,23 +132,32 @@
 <script>
 import { getDictGroup, getLocationInfo } from '@/api/common'
 import { $Message, $Toast } from '~/iview/base/index'
-import { compare } from '@/utils/date'
+import { compare, computedSeconds } from '@/utils/date'
 export default {
     data() {
         return {
             activity: {
+<<<<<<< HEAD
                 typeName: '运动',
                 type: 'SPORTS',
                 title: '白云山夜跑',
                 activityTime: '2018-11-15 00:00',
                 startTime_date: '2018-11-15',
                 startTime_time: '00:00',
+=======
+                typeName: '',
+                type: '',
+                title: '',
+                activityTime: '',
+                startTime_date: '',
+                startTime_time: '',
+>>>>>>> 71169d603d1cc079a2622898a6c75303ef1ae805
                 enrolmentTime: '',
                 endTime_date: '',
                 endTime_time: '',
                 lastTime: '',
                 lastTimeStr: '',
-                address: '陈家祠',
+                address: '',
                 perPay: '',
                 payStr: '',
                 preBoyNum: 3,
@@ -170,12 +179,24 @@ export default {
             ageGroup: [],
             tagGroup: [],
             openTagWindow: false,
-            animation: [],
+            refreshTime: ''
         }
+    },
+    onPullDownRefresh() {
+        if (this.refreshTime && computedSeconds(new Date(), this.refreshTime) < 10) {
+            wx.stopPullDownRefresh()
+            $Message({
+                type: 'warning',
+                content: '服务繁忙~请稍后重试！',
+            })
+        } else {
+            this.refreshTime = new Date()
+            this.initDictData()
+        }
+
     },
     created() {
         this.initDictData()
-      
     },
     computed: {
 
@@ -262,7 +283,7 @@ export default {
             } else {
                 // 拼接时间
                 this.activity.enrolmentTime = `${activity.endTime_date} ${activity.endTime_time}:00`
-                 if (compare(this.activity.enrolmentTime, new Date()) < 1) {
+                if (compare(this.activity.enrolmentTime, new Date()) < 1) {
                     $Message({
                         type: 'error',
                         content: '报名截止时间不能小于当前时间'
@@ -293,91 +314,50 @@ export default {
             return true
         },
         // 初始化字典组
-        initDictData() {
+        async initDictData() {
             // 活动类型
-            getDictGroup('ACTIVITY_TAPE').then(res => {
-                if (res.code === 100) {
-                    this.typeGroup = res.data
-                } else {
-                    $Message({
-                        content: res.msg,
-                        type: 'error'
-                    })
-                }
-            })
+            let ACTIVITY_TAPE = getDictGroup('ACTIVITY_TAPE')
             // 人均类型
-            getDictGroup('ACTIVITY_BUDGET').then(res => {
-                if (res.code === 100) {
-                    this.payGroup = res.data
-                    this.activity.perPay = this.payGroup[0].key
-                    this.activity.payStr = this.payGroup[0].name
-                } else {
-                    $Message({
-                        content: res.msg,
-                        type: 'error'
-                    })
-                }
-            })
+            let ACTIVITY_BUDGET = getDictGroup('ACTIVITY_BUDGET')
             // 最晚到场时间
-            getDictGroup('ACTIVITY_TIME_LIMIT').then(res => {
-                if (res.code === 100) {
-                    this.lastTimeGroup = res.data
-                    this.activity.lastTime = this.lastTimeGroup[0].key
-                    this.activity.lastTimeStr = this.lastTimeGroup[0].name
-                } else {
-                    $Message({
-                        content: res.msg,
-                        type: 'error'
-                    })
-                }
-            })
+            let ACTIVITY_TIME_LIMIT = getDictGroup('ACTIVITY_TIME_LIMIT')
             // 年龄组
-            getDictGroup('USER_AGE').then(res => {
-                if (res.code === 100) {
-                    this.ageGroup = res.data
-                    this.activity.age = this.ageGroup[0].key
-                    this.activity.ageStr = this.ageGroup[0].name
-                } else {
-                    $Message({
-                        content: res.msg,
-                        type: 'error'
-                    })
-                }
-            })
+            let USER_AGE = getDictGroup('USER_AGE')
             // 男女人数
-            getDictGroup('PEOPLES').then(res => {
-                if (res.code === 100) {
-                    let boyGroup = []
-                    let girlGroup = []
-                    res.data.forEach(item => {
-                        boyGroup.push(item.name)
-                        girlGroup.push(item.name)
-                    })
-                    this.personGroup = [boyGroup, girlGroup]
-                    this.activity.preBoyNum = this.personGroup[0][0]
-                    this.activity.preGirlNum = this.personGroup[1][0]
-                } else {
-                    $Message({
-                        content: res.msg,
-                        type: 'error'
-                    })
-                }
-            })
+            let PEOPLES = getDictGroup('PEOPLES')
             // 约定
-            getDictGroup('ACTIVITY_CONVENTION').then(res => {
-                if (res.code === 100) {
-                    this.tagGroup = res.data
-                    this.tagGroup.map(item => {
-                        item.checked = false
-                        item.color = 'blue'
-                        return item
-                    })
-                } else {
-                    $Message({
-                        content: res.msg,
-                        type: 'error'
-                    })
-                }
+            let ACTIVITY_CONVENTION = getDictGroup('ACTIVITY_CONVENTION')
+            Promise.all([ACTIVITY_TAPE, ACTIVITY_BUDGET, ACTIVITY_TIME_LIMIT, USER_AGE, PEOPLES, ACTIVITY_CONVENTION]).then(list => {
+                this.typeGroup = list[0]
+                this.payGroup = list[1]
+                this.activity.perPay = this.payGroup[0].key
+                this.activity.payStr = this.payGroup[0].name
+                this.lastTimeGroup = list[2]
+                this.activity.lastTime = this.lastTimeGroup[0].key
+                this.activity.lastTimeStr = this.lastTimeGroup[0].name
+                this.ageGroup = list[3]
+                this.activity.age = this.ageGroup[0].key
+                this.activity.ageStr = this.ageGroup[0].name
+                let boyGroup = []
+                let girlGroup = []
+                list[4].forEach(item => {
+                    boyGroup.push(item.name)
+                    girlGroup.push(item.name)
+                })
+                this.personGroup = [boyGroup, girlGroup]
+                this.activity.preBoyNum = this.personGroup[0][0]
+                this.activity.preGirlNum = this.personGroup[1][0]
+                this.tagGroup = list[5]
+                this.tagGroup.map(item => {
+                    item.checked = false
+                    item.color = 'blue'
+                    return item
+                })
+                // 停止加载
+                wx.stopPullDownRefresh()
+            }).catch(res => {
+                // 停止加载
+                wx.stopPullDownRefresh()
             })
         },
         // 弹出约定规则窗口

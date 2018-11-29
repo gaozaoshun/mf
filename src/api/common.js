@@ -1,4 +1,5 @@
 import $http from '@/utils/fetch'
+import { $Message } from '~/iview/base/index'
 
 // 经纬度转具体地址
 export const getLocationInfo = ({ latitude, longitude }) => {
@@ -18,7 +19,7 @@ export const getLocationInfo = ({ latitude, longitude }) => {
 
 // 获取广告位列表
 export const getAdList = () => {
-    return new Promise(reslove => {
+    return new Promise(resolve => {
         $http.request({
             url: ''
         })
@@ -27,7 +28,7 @@ export const getAdList = () => {
 
 // 获取字典组
 export const getDictGroup = groupKey => {
-    return new Promise((reslove, reject) => {
+    return new Promise((resolve, reject) => {
         $http.request({
             url: 'dictList',
             method: 'post',
@@ -35,7 +36,16 @@ export const getDictGroup = groupKey => {
                 groupKey
             }
         }).then(res => {
-            reslove(res)
+            if (res.code === 100) {
+                resolve(res.data)
+            } else {
+                $Message({
+                    type: 'error',
+                    content: res.msg
+                })
+            }
+        }).catch(res => {
+            reject()
         })
     })
 }
