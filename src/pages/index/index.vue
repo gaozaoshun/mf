@@ -1,5 +1,5 @@
 <template>
-  <div class="wrapper">
+  <scroll-view scroll-y @scrolltolower='loadMore' class="wrapper">
     <!-- 广告位 -->
     <swiper class='swiper' :indicator-dots='adConfig.indicatorDots' :indicator-color='adConfig.indicatorColor' :indicator-active-color='adConfig.indicatorActiveColor' :autoplay='adConfig.autoplay' :interval='adConfig.interval' :duration='adConfig.duration' :circular='adConfig.circular'>
       <div v-for="item in adList" :key='index' @click='toPath(item.path)'>
@@ -9,31 +9,36 @@
       </div>
     </swiper>
     <!-- 筛选Tabs -->
-    <tab></tab>
+    <tab @tab='tab' :isLoad='isLoadList'></tab>
     <!-- 通告栏 -->
     <i-notice-bar icon="systemprompt" color="#ff9900" loop closable>
       所有聚会满6人即组队成功，并会有聚会短信通知;
     </i-notice-bar>
     <!-- 活动列表 -->
     <div v-for="item in activityList" :key="index" class="activity">
-      <activity-card :activity='item'></activity-card>
+      <activity-card :activity='item' @toDetail='toActivityDetail'></activity-card>
     </div>
+    <i-load-more :tip="loadingTip" :loading="loading" />
     <!-- 全局提醒 -->
     <i-message id="message" />
-  </div>
+  </scroll-view>
 </template>
 
 <script>
 import { login } from "@/api/login"
-import * as api from "@/api/common"
+import { getActivityList } from "@/api/activity"
+import { getLocationInfo, getDictGroup } from "@/api/common"
 import { getCurrentRoute, toAbsPath } from '@/utils/route'
 import tab from '@/components/tab'
 import activityCard from '@/components/activity-card'
+import { $Message, $Toast } from '~/iview/base/index'
 
 export default {
   components: { tab, activityCard },
   data() {
     return {
+      loading: true,
+      isLoadList: false,
       isfinish: false,
       adConfig: {
         indicatorDots: true,//是否显示面板指示点
@@ -59,73 +64,14 @@ export default {
         }
 
       ],
-      activityList: [
-        {
-          id: 1,
-          typeName: '桌游',
-          cover: 'https://f11.baidu.com/it/u=1086395033,1594004162&fm=72',
-          typeColor: '#ff9900',
-          activityName: '谋杀岛',
-          startTime: '2018-11-04 16:31:22',
-          address: '华南农业大学',
-          distance: '12.4km',
-          totalNum: 8,
-          curNum: 3,
-          initiator: { id: 1, avatar: 'http://img5.imgtn.bdimg.com/it/u=2788671462,1686688089&fm=26&gp=0.jpg', score: 99, nickName: '闪七君' }
-        },
-        {
-          id: 2,
-          typeName: '桌游',
-          cover: 'https://f11.baidu.com/it/u=1086395033,1594004162&fm=72',
-          typeColor: '#ff9900',
-          activityName: '谋杀岛',
-          address: '华南农业大学',
-          startTime: '2019-11-14 12:32:55',
-          distance: '12.4km',
-          totalNum: 8,
-          curNum: 3,
-          initiator: { id: 1, avatar: 'http://img5.imgtn.bdimg.com/it/u=2788671462,1686688089&fm=26&gp=0.jpg', score: 99, nickName: '闪七君' }
-        },
-        {
-          id: 2,
-          typeName: '桌游',
-          cover: 'https://f11.baidu.com/it/u=1086395033,1594004162&fm=72',
-          typeColor: '#ff9900',
-          activityName: '谋杀岛',
-          address: '华南农业大学',
-          startTime: '2019-11-14 12:32:55',
-          distance: '12.4km',
-          totalNum: 8,
-          curNum: 3,
-          initiator: { id: 1, avatar: 'http://img5.imgtn.bdimg.com/it/u=2788671462,1686688089&fm=26&gp=0.jpg', score: 99, nickName: '闪七君' }
-        },
-        {
-          id: 2,
-          typeName: '桌游',
-          cover: 'https://f11.baidu.com/it/u=1086395033,1594004162&fm=72',
-          typeColor: '#ff9900',
-          activityName: '谋杀岛',
-          address: '华南农业大学',
-          startTime: '2019-11-14 12:32:55',
-          distance: '12.4km',
-          totalNum: 8,
-          curNum: 3,
-          initiator: { id: 1, avatar: 'http://img5.imgtn.bdimg.com/it/u=2788671462,1686688089&fm=26&gp=0.jpg', score: 99, nickName: '闪七君' }
-        },
-        {
-          id: 2,
-          typeName: '桌游',
-          cover: 'https://f11.baidu.com/it/u=1086395033,1594004162&fm=72',
-          typeColor: '#ff9900',
-          activityName: '谋杀岛',
-          address: '华南农业大学',
-          startTime: '2019-11-14 12:32:55',
-          distance: '12.4km',
-          totalNum: 8,
-          curNum: 3,
-          initiator: { id: 1, avatar: 'http://img5.imgtn.bdimg.com/it/u=2788671462,1686688089&fm=26&gp=0.jpg', score: 99, nickName: '闪七君' }
-        }
-      ]
+      activityList: [],
+      tabName: '',
+      pageSize: 10,
+      pageNum: 1,
+      pageCount: 10,
+      isLast: false,
+      activityCoverMap: {},
+      requestParams: {}
     }
   },
   watch: {
@@ -135,6 +81,9 @@ export default {
     }
   },
   computed: {
+    loadingTip() {
+      return this.loading ? 'loading' : 'ending'
+    },
     userInfo() {
       return this.$store.state.userInfo
     },
@@ -146,6 +95,51 @@ export default {
     }
   },
   methods: {
+    // 跳转到活动详情页
+    toActivityDetail(detail){
+      wx.navigateTo({
+        url:`/pages/activityDetail/main?id=${detail.id}`
+      })
+    },
+    // 下拉加载
+    loadMore() {
+
+      this.loadList()
+    },
+    loadList() {
+      // 是否到底
+      if (this.pageCount === this.activityList.length) {
+        return
+      }
+      // 显示加载动画
+      this.loading = true
+      getActivityList(this.requestParams).then(res => {
+        if (res.code === 100) {
+          this.requestParams.page++
+          this.pageCount = res.data.total
+          let activity = res.data.cdata.map(item => {
+            item.cover = this.activityCoverMap[item.type]
+            return item
+          })
+          this.activityList = this.activityList.concat(activity)
+          this.loading = false
+        }
+      })
+    },
+    // 获取活动列表
+    tab(tabItem) {
+      // 切换Tab初始化
+      if (this.tabName != tabItem.name) {
+        this.pageNum = 1
+        this.tabName = tabItem.name
+        this.activityList = []
+      }
+      // 初始化页码
+      tabItem.page = this.pageNum
+      tabItem.num = this.pageSize
+      this.requestParams = tabItem
+      this.loadList()
+    },
     // 跳转至落地页
     toPath(url) {
       wx.navigateTo({
@@ -213,14 +207,16 @@ export default {
           const latitude = res.latitude
           const longitude = res.longitude
           // 经纬度转 具体地址
-          api.getLocationInfo({ latitude, longitude }).then(res => {
+          getLocationInfo({ latitude, longitude }).then(res => {
             if (res.infocode === '10000') {
               let addressComponent = res.regeocode.addressComponent
               let address = {
                 addStr: addressComponent.city && addressComponent.city.length ? addressComponent.city : addressComponent.province,
-                citycode: addressComponent.citycode
+                citycode: addressComponent.citycode,
+                location: addressComponent.streetNumber.location
               }
               this.$store.dispatch('setAddress', address)
+              this.isLoadList = !this.isLoadList
             } else {
               wx.showToast({ title: '经纬度转换地名异常', icon: 'none' })
             }
@@ -253,19 +249,42 @@ export default {
     initAdList() {
 
     },
+    // 加载字典组
+    initDictGroup() {
+      getDictGroup('ACTIVITY_TYPE_COVER').then(res => {
+        if (res.code === 100) {
+          let result = res.data
+          result.forEach(item => {
+            this.activityCoverMap[item.key] = item.name
+          })
+          this.$store.dispatch('setActivityCoverMap',this.activityCoverMap)
+        } else {
+          $Message({
+            type: 'error',
+            content: res.msg
+          })
+        }
+      })
+    }
   },
   created() {
-    // 0.检查用户权限
+    // 检查用户权限
     this.checkUserInfoAutho()
 
-    // 2.初始化广告位
+    // 初始化广告位
     this.initAdList()
+
+    // 加载字典组
+    this.initDictGroup()
   }
 };
 </script>
 
 <style scoped>
-.wrapper{
+.wrapper {
+  position: absolute;
+  top: 0;
+  bottom: 0;
   width: 750rpx;
 }
 .swiper {

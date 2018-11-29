@@ -14,7 +14,7 @@
             </div>
             <div class="content-wrapper">
                 <div v-for="(item,index) in list" :key="index" style='line-height:70rpx;' @click="chooseItem(item)" :class="{'selected-item':item.selected}">
-                    <i class="iconfont mf-radio radio-icon" :class="{'selected-icon':item.selected}"></i>
+                    <i class="iconfont mf-31guanzhuxuanzhong radio-icon" :class="{'selected-icon':item.selected}"></i>
                     <span class="item-info" :class="{'selected-item':item.selected}" v-if="item.key!=='DIY'"> {{item.name}}</span>
                     <input type="textarea" :model='diy' @change='changeDiy' :placeholder="item.name" v-if="item.key==='DIY'" class="item-info input-diy" :class="{'selected-item':item.selected}">
                 </div>

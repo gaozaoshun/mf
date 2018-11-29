@@ -14,6 +14,7 @@
     "i-steps": "../../../static/iview/steps/index",
     "i-step": "../../../static/iview/step/index",
     "i-radio-group": "../../../static/iview/radio-group/index",
-    "i-radio": "../../../static/iview/radio/index"
+    "i-radio": "../../../static/iview/radio/index",
+    "i-switch": "../../../static/iview/switch/index"
   }
 }

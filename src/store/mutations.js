@@ -12,6 +12,9 @@ export default {
     },
     [types.SET_PUBLISH_ACTIVITY](state, publishActivity) {
         state.publishActivity = publishActivity
+    },
+    [types.SET_ACTIVITY_COVER_MAP](state, activityCoverMap) {
+        state.activityCoverMap = activityCoverMap
     }
     
 }

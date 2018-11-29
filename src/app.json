@@ -7,7 +7,9 @@
     "pages/login/main",
     "pages/evaluate/main",
     "pages/mymsg/main",
-    "pages/position/main"
+    "pages/position/main",
+    "pages/activityDetail/main"
+
   ],
   "window": {
     "backgroundTextStyle": "light",

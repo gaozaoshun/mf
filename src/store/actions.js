@@ -15,3 +15,7 @@ export const setIsLogin = ({ commit }, isLogin) => {
 export const setPublishActivity = ({ commit }, publishActivity) => {
     commit(types.SET_PUBLISH_ACTIVITY, publishActivity)
 }
+
+export const setActivityCoverMap = ({ commit }, activityCoverMap) => {
+    commit(types.SET_ACTIVITY_COVER_MAP, activityCoverMap)
+}

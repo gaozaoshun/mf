@@ -42,12 +42,10 @@
         <i-button @click="lastStep" type="ghost" shape="circle" size="small">上一步</i-button>
         <!-- 下一步 -->
         <i-button @click="nextStep" type="warning" shape="circle" size="small">下一步</i-button>
-        <i-message id='message'></i-message>
     </div>
 </template>
 <script>
 import { getDictGroup } from '@/api/common'
-import { publishActivity } from '@/api/activity'
 import { $Message, $Toast } from '~/iview/base/index'
 import Flow from '@/components/flow'
 
@@ -87,18 +85,8 @@ export default {
         nextStep() {
             if (this.checkParams()) {
                 let params = Object.assign(this.lastActivity, this.activity)
-                publishActivity(params).then(res => {
-                    if (res.code === 100) {
-
-                    } else {
-                        $Message({
-                            type: 'error',
-                            content: res.msg
-                        })
-                    }
-                })
+                this.$emit('nextStep', params)
             }
-
         },
         checkParams() {
             let activity = this.activity

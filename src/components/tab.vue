@@ -1,39 +1,86 @@
 <template>
     <div class="wrapper">
-        <picker mode="region" @change="chooseCity">
-            <div class="item bg"><i class="iconfont mf-zuobiao"></i><span class="vertial zb">{{city}}</span><i class="iconfont mf-down"></i></div>
-        </picker>
-        <div class="item"><span class="vertial">最快开启</span></div>
-        <div class="item"><span class="vertial">离我最近</span></div>
-        <div class="item"><span class="vertial">参与人数</span></div>
+        <div class="item bg" @click="chooseCity"><i class="iconfont mf-zuobiao"></i><span class="vertial zb">{{city.addStr?city.addStr:'全国'}}</span><i class="iconfont mf-down"></i></div>
+        <div class="item" v-for='(item,index) in tabs' :key="index" @click="tab(item)">
+            <span class="vertial" :class="{'checked':item.checked}">{{item.name}}</span>
+        </div>
     </div>
 </template>
 <script>
+import { getLocationInfo } from '@/api/common'
 export default {
     props: {
-
+        isLoad: {
+            type: Boolean,
+            default: false
+        }
     },
     computed: {
         city() {
-            return this.$store.state.address.addStr ? this.$store.state.address.addStr : '全国'
+            return this.$store.state.address
+        }
+    },
+    watch: {
+        isLoad() {
+            let curItem = {
+                sheetType:1,
+                name:'最快开启'
+            }
+            curItem.city = this.city.addStr
+            curItem.coordinate = this.city.location
+            this.$emit('tab', curItem)
         }
     },
     data() {
         return {
-        }
-    },
-    created() {
 
+            tabs: [
+                {
+                    sheetType: 1,
+                    name: '最快开启',
+                    checked: true
+                },
+                {
+                    sheetType: 2,
+                    name: '离我最近',
+                    checked: false
+                },
+                {
+                    sheetType: 3,
+                    name: '参与人数',
+                    checked: false
+                }
+            ]
+        }
     },
     methods: {
         // 选择城市
         chooseCity(e) {
-            console.log(e.target)
-            let address = {
-                addStr:e.target.value[1],
-                citycode:e.target.code[1]
-            }
-            this.$store.dispatch('setAddress',address)
+            wx.chooseLocation({
+                success: res => {
+                    let address = {
+                        location: `${res.longitude},${res.latitude}`
+                    }
+                    getLocationInfo({ latitude: res.latitude, longitude: res.longitude }).then(res => {
+                        if (res.status === '1') {
+                            address.addStr = res.regeocode.addressComponent.city.length > 0 ? res.regeocode.addressComponent.city : res.regeocode.addressComponent.province
+                            this.$store.dispatch('setAddress', address)
+                        }
+                    })
+                }
+            })
+        },
+        tab(curItem) {
+            this.tabs.map(item => {
+                if (item.name === curItem.name) {
+                    item.checked = true
+                } else {
+                    item.checked = false
+                }
+            })
+            curItem.city = this.city.addStr
+            curItem.coordinate = this.city.location
+            this.$emit('tab', curItem)
         }
     }
 }
@@ -50,7 +97,9 @@ export default {
   line-height: 50rpx;
   font-size: 25rpx;
 }
-.item {
+.checked {
+  color: #ff9900;
+  font-weight: bolder;
 }
 .vertial {
   vertical-align: top;

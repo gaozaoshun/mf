@@ -126,10 +126,7 @@
                 </i-tag>
             </i-modal>
         </div>
-        <!-- 提示 -->
-        <i-toast id="toast" />
-        <!-- 全局提醒 -->
-        <i-message id="message" />
+       
     </div>
 </template>
 <script>
@@ -143,8 +140,8 @@ export default {
                 typeName: '运动',
                 type: 'SPORTS',
                 title: '白云山夜跑',
-                activityTime: '2018-11-10 00:00',
-                startTime_date: '2018-11-10',
+                activityTime: '2018-11-15 00:00',
+                startTime_date: '2018-11-15',
                 startTime_time: '00:00',
                 enrolmentTime: '',
                 endTime_date: '',
@@ -532,7 +529,7 @@ export default {
   vertical-align: top;
 }
 .required {
-  background: rgba(0, 0, 0, 0.1);
+  background: rgba(0, 0, 0, 0.03);
 }
 .require-title {
   padding: 10rpx 0;

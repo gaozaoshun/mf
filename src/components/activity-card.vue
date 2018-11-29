@@ -1,35 +1,37 @@
 <template>
-  <div class="wrapper">
+  <div class="wrapper" @click='toDetail'>
     <div class="type">
       <i class="iconfont mf-file type-icon"></i>
-      <span class="type-name">{{activity.typeName}}</span>
+      <span class="type-name">{{activity.name}}</span>
     </div>
     <div class="msg">
       <div class="cover">
         <img :src="activity.cover" class="cover-img">
-        <div class="cover-tag">{{activity.totalNum}}人聚</div>
+        <div class="cover-tag">{{totalNum}}人聚</div>
       </div>
       <div class="info">
-        <div class="info-title">{{activity.activityName}}</div>
+        <div class="info-title">{{activity.title}}</div>
         <div class="info-second">
           <div class="distance-time">
-            <i-icon type="time_fill" size="15" color="#80848f" /><span class='verital'> {{distanceTime}}</span></div>
+            <i-icon type="time_fill" size="15" color="#80848f" /><span class='verital'> {{activity.activityTime}}</span></div>
           <div class="distance-len">
             <i-icon type="coordinates_fill" size="15" color="#80848f" /><span class='verital'> {{activity.distance}}</span></div>
           <div class="ratio">
             <i-icon type="group_fill" size="15" color="#80848f" /><span class='verital'> {{ratio}}</span></div>
         </div>
         <div class="address">
-          <i-icon type="coordinates" size="15" color="#2b85e4" /><span class='verital'> {{activity.address}}</span></div>
+          <i-icon type="coordinates" size="15" color="#2b85e4" />
+          <span class='verital overflow'> {{activity.address}}</span>
+        </div>
       </div>
     </div>
     <div class="initiator">
       <div class='initiator-imgdiv'>
-        <img :src="activity.initiator.avatar" class='initiator-img' />
+        <img :src="activity.publisherImageUrl" class='initiator-img' />
       </div>
       <div class="initiator-scorediv">
         <i class="iconfont mf-score iinitiator-icon"></i>
-        <span class="initiator-score"> {{activity.initiator.score}}</span>
+        <span class="initiator-score"> {{activity.publisherScore}}</span>
       </div>
     </div>
   </div>
@@ -45,17 +47,24 @@ export default {
     }
   },
   computed: {
-    distanceTime() {
-      return parseToNow(this.activity.startTime)
+    totalNum() {
+      return this.activity.preBoyNum + this.activity.girlNum
     },
+
     ratio() {
-      let curNum = this.activity.curNum
-      let totalNum = this.activity.totalNum
+      let curNum = this.activity.boyNum + this.activity.girlNum
+      curNum = curNum ? curNum : 0
+      let totalNum = this.activity.preBoyNum + this.activity.girlNum
       if (curNum === totalNum) {
         return '满员'
       } else {
         return `${curNum} / ${totalNum}`
       }
+    }
+  },
+  methods:{
+    toDetail(){
+      this.$emit('toDetail',this.activity)
     }
   }
 }
@@ -150,7 +159,7 @@ export default {
   color: #ff9900;
   display: flex;
   justify-content: space-between;
-  background: rgba(0,0,0,0.1);
+  background: rgba(0, 0, 0, 0.1);
   border-radius: 20rpx 0 13rpx 0;
 }
 .initiator-imgdiv {
@@ -171,9 +180,11 @@ export default {
   font-size: 25rpx;
   width: 86rpx;
 }
-.initiator-icon {
-}
-.initiator-score {
-  
+.overflow {
+  display: inline-block;
+  width: 340rpx;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 </style>

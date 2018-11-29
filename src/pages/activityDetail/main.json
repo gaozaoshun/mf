@@ -1,9 +1,10 @@
 {
-    "navigationBarTitleText": "参与活动",
+    "navigationBarTitleText": "活动详情",
     "usingComponents": {
         "i-message": "../../../static/iview/message/index" ,
         "i-notice-bar": "../../../static/iview/notice-bar/index",
         "i-icon": "../../../static/iview/icon/index",
-        "i-load-more": "../../../static/iview/load-more/index"
+        "i-load-more": "../../../static/iview/load-more/index",
+        "i-alert": "../../../static/iview/alert/index"
     }
 }
