@@ -1,50 +1,62 @@
 <template>
-  <scroll-view scroll-y @scrolltolower='loadMore' class="wrapper">
+  <scroll-view
+    scroll-y
+    @scrolltolower='loadMore'
+    class="wrapper"
+  >
     <!-- 广告位 -->
-    <swiper class='swiper'
-            :indicator-dots='adConfig.indicatorDots'
-            :indicator-color='adConfig.indicatorColor'
-            :indicator-active-color='adConfig.indicatorActiveColor'
-            :autoplay='adConfig.autoplay'
-            :interval='adConfig.interval'
-            :duration='adConfig.duration'
-            :circular='adConfig.circular'>
-      <div v-for="(item,index) in adList"
-           :key='index'
-           @click='toPath(item.path)'>
+    <swiper
+      class='swiper'
+      :indicator-dots='adConfig.indicatorDots'
+      :indicator-color='adConfig.indicatorColor'
+      :indicator-active-color='adConfig.indicatorActiveColor'
+      :autoplay='adConfig.autoplay'
+      :interval='adConfig.interval'
+      :duration='adConfig.duration'
+      :circular='adConfig.circular'
+    >
+      <div
+        v-for="(item,index) in adList"
+        :key='index'
+        @click='toPath(item.path)'
+      >
         <swiper-item>
-          <img :src="item.cover"
-               class='swiper-img' />
+          <img
+            :src="item.cover"
+            class='swiper-img'
+          />
         </swiper-item>
       </div>
     </swiper>
     <!-- 筛选Tabs -->
-<<<<<<< HEAD
-    <tab @tab='tab' :isLoad='isLoadList'></tab>
-=======
-    <tab @changeTab='changeTab'
-         @changeCity='changeCity'></tab>
->>>>>>> 71169d603d1cc079a2622898a6c75303ef1ae805
+    <tab
+      @tab='tab'
+      :isLoad='isLoadList'
+    ></tab>
     <!-- 通告栏 -->
-    <i-notice-bar icon="systemprompt"
-                  color="#ff9900"
-                  loop
-                  closable>
+    <i-notice-bar
+      icon="systemprompt"
+      color="#ff9900"
+      loop
+      closable
+    >
       所有聚会满6人即组队成功，并会有聚会短信通知;
     </i-notice-bar>
     <!-- 活动列表 -->
-<<<<<<< HEAD
-    <div v-for="item in activityList" :key="index" class="activity">
-      <activity-card :activity='item' @toDetail='toActivityDetail'></activity-card>
-=======
-    <div v-for="(item,index) in activityList"
-         :key="index"
-         class="activity"
-         @click="toDetail(item)">
-      <activity-card :activity='item'></activity-card>
->>>>>>> 71169d603d1cc079a2622898a6c75303ef1ae805
+    <div
+      v-for="item in activityList"
+      :key="index"
+      class="activity"
+    >
+      <activity-card
+        :activity='item'
+        @toDetail='toActivityDetail'
+      ></activity-card>
     </div>
-    <i-load-more :tip="loadingTip" :loading="loading" />
+    <i-load-more
+      :tip="loadingTip"
+      :loading="loading"
+    />
     <!-- 全局提醒 -->
     <i-message id="message" />
   </scroll-view>
@@ -52,13 +64,8 @@
 
 <script>
 import { login } from "@/api/login"
-<<<<<<< HEAD
 import { getActivityList } from "@/api/activity"
 import { getLocationInfo, getDictGroup } from "@/api/common"
-=======
-import * as api from "@/api/common"
-import { getActivityList } from '@/api/activity'
->>>>>>> 71169d603d1cc079a2622898a6c75303ef1ae805
 import { getCurrentRoute, toAbsPath } from '@/utils/route'
 import tab from '@/components/tab'
 import activityCard from '@/components/activity-card'
@@ -68,13 +75,8 @@ export default {
   components: { tab, activityCard },
   data() {
     return {
-<<<<<<< HEAD
       loading: true,
       isLoadList: false,
-=======
-      pageNum: 1,
-      pageSize: 10,
->>>>>>> 71169d603d1cc079a2622898a6c75303ef1ae805
       isfinish: false,
       adConfig: {
         indicatorDots: true,//是否显示面板指示点
@@ -106,7 +108,6 @@ export default {
       pageNum: 1,
       pageCount: 10,
       isLast: false,
-      activityCoverMap: {},
       requestParams: {}
     }
   },
@@ -128,19 +129,20 @@ export default {
     },
     isLogin() {
       return this.$store.state.isLogin
+    },
+    activityCoverMap() {
+      return this.$store.state.activityCoverMap
     }
   },
   methods: {
-<<<<<<< HEAD
     // 跳转到活动详情页
-    toActivityDetail(detail){
+    toActivityDetail(detail) {
       wx.navigateTo({
-        url:`/pages/activityDetail/main?id=${detail.id}`
+        url: `/pages/activityDetail/main?id=${detail.id}`
       })
     },
     // 下拉加载
     loadMore() {
-
       this.loadList()
     },
     loadList() {
@@ -165,6 +167,7 @@ export default {
     },
     // 获取活动列表
     tab(tabItem) {
+      this.initDictGroup()
       // 切换Tab初始化
       if (this.tabName != tabItem.name) {
         this.pageNum = 1
@@ -176,23 +179,15 @@ export default {
       tabItem.num = this.pageSize
       this.requestParams = tabItem
       this.loadList()
-=======
-    // 到详情页
-    toDetail(item) {
-      wx.navigateTo({
-        url: `/pages/detail/main?id=${item.id}`
-      })
     },
-    // 切换城市
-    changeCity(city) {
-      getActivityList({ address: city.addStr, pageNum: this.pageNum, pageSize: this.pageSize }).then(res => {
-        console.log(res)
+    // 加载字典组
+    async initDictGroup() {
+      let result = await getDictGroup('ACTIVITY_TYPE_COVER')
+      let activityCoverMap = {}
+      result.forEach(item => {
+        activityCoverMap[item.key] = item.name
       })
-    },
-    // 切换Tab
-    changeTab(item) {
-      console.log(item)
->>>>>>> 71169d603d1cc079a2622898a6c75303ef1ae805
+      this.$store.dispatch('setActivityCoverMap', activityCoverMap)
     },
     // 跳转至落地页
     toPath(url) {
@@ -302,23 +297,6 @@ export default {
     // 初始化广告位
     initAdList() {
 
-    },
-    // 加载字典组
-    initDictGroup() {
-      getDictGroup('ACTIVITY_TYPE_COVER').then(res => {
-        if (res.code === 100) {
-          let result = res.data
-          result.forEach(item => {
-            this.activityCoverMap[item.key] = item.name
-          })
-          this.$store.dispatch('setActivityCoverMap',this.activityCoverMap)
-        } else {
-          $Message({
-            type: 'error',
-            content: res.msg
-          })
-        }
-      })
     }
   },
   created() {
@@ -327,21 +305,15 @@ export default {
 
     // 初始化广告位
     this.initAdList()
-
-    // 加载字典组
-    this.initDictGroup()
   }
 };
 </script>
 
 <style scoped>
 .wrapper {
-<<<<<<< HEAD
   position: absolute;
   top: 0;
   bottom: 0;
-=======
->>>>>>> 71169d603d1cc079a2622898a6c75303ef1ae805
   width: 750rpx;
 }
 .swiper {

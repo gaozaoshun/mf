@@ -23,7 +23,6 @@
                     <i class="iconfont mf-shalou last-light-icon"></i>
                     <span class="last-light-info">聚会流程</span>
                 </div>
-
             </div>
             <div class="flow-content">
                 <i-steps direction="vertical">
@@ -32,7 +31,6 @@
                             {{item}}
                         </div>
                     </i-step>
-
                 </i-steps>
             </div>
         </div>

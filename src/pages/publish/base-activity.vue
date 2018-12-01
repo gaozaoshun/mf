@@ -137,21 +137,12 @@ export default {
     data() {
         return {
             activity: {
-<<<<<<< HEAD
                 typeName: '运动',
                 type: 'SPORTS',
                 title: '白云山夜跑',
                 activityTime: '2018-11-15 00:00',
                 startTime_date: '2018-11-15',
                 startTime_time: '00:00',
-=======
-                typeName: '',
-                type: '',
-                title: '',
-                activityTime: '',
-                startTime_date: '',
-                startTime_time: '',
->>>>>>> 71169d603d1cc079a2622898a6c75303ef1ae805
                 enrolmentTime: '',
                 endTime_date: '',
                 endTime_time: '',

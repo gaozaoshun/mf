@@ -6,7 +6,6 @@
     <div v-show='showTwo'>
       <more-activity @lastStep='toStepOne' @nextStep='toStepThree'></more-activity>
     </div>
-<<<<<<< HEAD
     <div v-show='showThree'>
       <last-activity @lastStep='toStepTwo'></last-activity>
     </div>
@@ -14,9 +13,6 @@
     <i-toast id="toast" />
     <!-- 全局提醒 -->
     <i-message id="message" />
-=======
-  
->>>>>>> 71169d603d1cc079a2622898a6c75303ef1ae805
   </div>
 </template>
 

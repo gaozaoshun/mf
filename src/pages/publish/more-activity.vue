@@ -46,11 +46,6 @@
 </template>
 <script>
 import { getDictGroup } from '@/api/common'
-<<<<<<< HEAD
-=======
-import { computedSeconds } from '@/utils/date'
-import { publishActivity } from '@/api/activity'
->>>>>>> 71169d603d1cc079a2622898a6c75303ef1ae805
 import { $Message, $Toast } from '~/iview/base/index'
 import Flow from '@/components/flow'
 

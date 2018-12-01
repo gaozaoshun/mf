@@ -8,12 +8,7 @@
     "pages/evaluate/main",
     "pages/mymsg/main",
     "pages/position/main",
-<<<<<<< HEAD
     "pages/activityDetail/main"
-
-=======
-    "pages/detail/main"
->>>>>>> 71169d603d1cc079a2622898a6c75303ef1ae805
   ],
   "window": {
     "backgroundTextStyle": "light",
